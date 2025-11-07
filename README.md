@@ -1,94 +1,63 @@
-# 10x Astro Starter
+# HomeBudget OCR
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+## 1. Project Name
+**HomeBudget OCR**
 
-## Tech Stack
+## 2. Project Description
+HomeBudget OCR is a web application designed to simplify expense tracking by automating the receipt processing workflow. It leverages OCR technology to quickly extract product names and prices from Biedronka receipts, automatically categorizes the items, and provides a verification interface. Users can review highlighted items, with recognized items marked in green and unrecognized ones in orange, and make necessary manual adjustments. The application also offers a product management interface for CRUD operations on product mappings.
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+## 3. Tech Stack
+- **Frontend:** Astro 5, React 19, TypeScript 5, Tailwind 4, Shadcn/ui
+- **Backend:** Supabase (PostgreSQL database with built-in authentication)
+- **AI Integration:** Openrouter.ai for OCR processing
+- **CI/CD & Hosting:** Github Actions & DigitalOcean
 
-## Prerequisites
+## 4. Getting Started Locally
+To set up the project on your local machine:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/HomeBudget-OCR.git
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd HomeBudget-OCR
+   ```
+3. **Ensure you are using Node version `22.14.0`:**
+   ```bash
+   nvm use
+   ```
+4. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+5. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+## 5. Available Scripts
+- **dev:** Starts the Astro development server.
+- **build:** Builds the project for production.
+- **preview:** Serves a production Build locally for testing.
+- **astro:** CLI command for Astro-specific operations.
+- **lint:** Runs ESLint to analyze code quality.
+- **lint:fix:** Automatically fixes linting issues.
+- **format:** Formats code using Prettier.
 
-## Getting Started
+## 6. Project Scope
+The scope of HomeBudget OCR includes:
+- **Receipt Processing:** Optical Character Recognition (OCR) to extract data from Biedronka receipts.
+- **Automatic Categorization:** Matching recognized items to pre-defined categories with a case-sensitive comparison.
+- **Verification Interface:** Visual cues (green for recognized, orange for unrecognized) to assist user verification and manual corrections.
+- **Expense Summary:** Generates a one-time summary of expenses by category (not stored permanently).
+- **Product Management:** A CRUD interface for managing product mappings.
+  
+Please note that:
+- The application currently supports receipts only from Biedronka.
+- Advanced analytics, multi-store support, and dynamic category modifications are out of scope for the MVP.
 
-1. Clone the repository:
+## 7. Project Status
+HomeBudget OCR is currently in the Minimum Viable Product (MVP) stage. While key functionalities have been implemented, further improvements and additional features are planned for future releases.
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Run the development server:
-
-```bash
-npm run dev
-```
-
-4. Build for production:
-
-```bash
-npm run build
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-
-## Project Structure
-
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
-
-## AI Development Support
-
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
-
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
-
-### Cursor IDE
-
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
-
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
-
-## License
-
-MIT
+## 8. License
+This project is licensed under the **MIT License**.
