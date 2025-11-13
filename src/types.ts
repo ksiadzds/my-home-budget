@@ -63,6 +63,11 @@ export interface ListProductsResponseDTO {
   pagination: PaginationMetaDTO;
 }
 
+// DTO odpowiedzi dla pojedynczego produktu
+export interface GetProductResponseDTO {
+  product: ProductDTO;
+}
+
 // Typy dla filtrowania
 export interface ProductFilter {
   category_id?: string;

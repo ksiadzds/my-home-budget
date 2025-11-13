@@ -276,5 +276,46 @@ export class ProductsService {
       has_prev: page > 1,
     };
   }
+
+  /**
+   * Pobiera produkt po ID dla konkretnego użytkownika
+   *
+   * @param userId - ID użytkownika
+   * @param productId - ID produktu do pobrania
+   * @returns ProductDTO lub null jeśli nie znaleziono
+   * @throws Error w przypadku błędów bazodanowych
+   */
+  async getProductById(
+    userId: string,
+    productId: string
+  ): Promise<ProductDTO | null> {
+    // Zapytanie do bazy z filtrowaniem po user_id
+    const { data: product, error } = await this.supabase
+      .from('produkty')
+      .select('*')
+      .eq('id', productId)
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Supabase error in getProductById:', error);
+      throw new Error(`Błąd podczas pobierania produktu: ${error.message}`);
+    }
+
+    // Jeśli produkt nie został znaleziony, zwróć null
+    if (!product) {
+      return null;
+    }
+
+    // Mapowanie wyniku do DTO
+    return {
+      id: product.id,
+      nazwa_produktu: product.nazwa_produktu,
+      kategoria_id: product.kategoria_id,
+      user_id: product.user_id,
+      created_at: product.created_at,
+      updated_at: product.updated_at,
+    };
+  }
 }
 

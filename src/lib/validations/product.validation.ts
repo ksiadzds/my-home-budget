@@ -90,3 +90,18 @@ export const listProductsQuerySchema = z.object({
  */
 export type ListProductsQueryInput = z.infer<typeof listProductsQuerySchema>;
 
+/**
+ * Schemat walidacji dla parametru path 'id' w GET /api/products/{id}
+ * Sprawdza poprawność formatu UUID
+ */
+export const getProductParamsSchema = z.object({
+  id: z
+    .string()
+    .uuid('Nieprawidłowy format UUID dla parametru id'),
+});
+
+/**
+ * Typ wejściowy dla parametrów GET produktu
+ */
+export type GetProductParamsInput = z.infer<typeof getProductParamsSchema>;
+
