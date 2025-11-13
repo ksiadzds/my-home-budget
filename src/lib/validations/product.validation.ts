@@ -8,9 +8,9 @@ import { z } from 'zod';
 export const createProductSchema = z.object({
   nazwa_produktu: z
     .string()
+    .trim()
     .min(1, 'Nazwa produktu nie może być pusta')
-    .max(255, 'Nazwa produktu nie może przekraczać 255 znaków')
-    .trim(),
+    .max(255, 'Nazwa produktu nie może przekraczać 255 znaków'),
   kategoria_id: z
     .string()
     .uuid('Nieprawidłowy format UUID dla kategoria_id'),
@@ -105,3 +105,13 @@ export const getProductParamsSchema = z.object({
  */
 export type GetProductParamsInput = z.infer<typeof getProductParamsSchema>;
 
+/**
+ * Schemat walidacji dla aktualizacji produktu
+ * Identyczny z createProductSchema - wymaga nazwy i kategorii
+ */
+export const updateProductSchema = createProductSchema;
+
+/**
+ * Typ wejściowy dla aktualizacji produktu
+ */
+export type UpdateProductInput = z.infer<typeof updateProductSchema>;

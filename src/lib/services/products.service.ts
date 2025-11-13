@@ -317,5 +317,93 @@ export class ProductsService {
       updated_at: product.updated_at,
     };
   }
+
+  /**
+   * Aktualizuje produkt w bazie danych
+   * 
+   * @param productId - ID produktu do aktualizacji
+   * @param nazwaProductu - Nowa nazwa produktu
+   * @param kategoriaId - Nowe ID kategorii
+   * @returns Zaktualizowany ProductDTO
+   * @throws Error gdy produkt nie istnieje
+   * @throws Error gdy kategoria nie istnieje
+   * @throws Error gdy nowa nazwa narusza constraint unikalności
+   */
+  async updateProduct(
+    productId: string,
+    nazwaProductu: string,
+    kategoriaId: string
+  ): Promise<ProductDTO> {
+    // 1. Sprawdzenie czy kategoria istnieje
+    const { data: category, error: categoryError } = await this.supabase
+      .from('kategorie')
+      .select('id')
+      .eq('id', kategoriaId)
+      .single();
+
+    if (categoryError || !category) {
+      throw new Error('Kategoria nie istnieje');
+    }
+
+    // 2. Pobranie istniejącego produktu
+    const { data: existingProduct, error: fetchError } = await this.supabase
+      .from('produkty')
+      .select('*')
+      .eq('id', productId)
+      .maybeSingle();
+
+    if (fetchError) {
+      throw new Error(`Błąd podczas pobierania produktu: ${fetchError.message}`);
+    }
+
+    if (!existingProduct) {
+      throw new Error('Produkt nie został znaleziony');
+    }
+
+    // 3. Sprawdzenie unikalności nazwy (tylko jeśli nazwa się zmienia)
+    if (existingProduct.nazwa_produktu !== nazwaProductu) {
+      const { data: duplicateProduct, error: checkError } = await this.supabase
+        .from('produkty')
+        .select('id')
+        .eq('user_id', existingProduct.user_id)
+        .eq('nazwa_produktu', nazwaProductu)
+        .neq('id', productId)
+        .maybeSingle();
+
+      if (checkError) {
+        throw new Error(`Błąd podczas sprawdzania duplikatów: ${checkError.message}`);
+      }
+
+      if (duplicateProduct) {
+        throw new Error('Produkt o takiej nazwie już istnieje');
+      }
+    }
+
+    // 4. Aktualizacja produktu
+    const { data: updatedProduct, error: updateError } = await this.supabase
+      .from('produkty')
+      .update({
+        nazwa_produktu: nazwaProductu,
+        kategoria_id: kategoriaId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', productId)
+      .select()
+      .single();
+
+    if (updateError || !updatedProduct) {
+      throw new Error(`Nie udało się zaktualizować produktu: ${updateError?.message || 'Nieznany błąd'}`);
+    }
+
+    // 5. Mapowanie do DTO
+    return {
+      id: updatedProduct.id,
+      nazwa_produktu: updatedProduct.nazwa_produktu,
+      kategoria_id: updatedProduct.kategoria_id,
+      user_id: updatedProduct.user_id,
+      created_at: updatedProduct.created_at,
+      updated_at: updatedProduct.updated_at,
+    };
+  }
 }
 
