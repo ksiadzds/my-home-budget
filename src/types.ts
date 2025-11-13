@@ -39,7 +39,45 @@ export interface CategoryDTO {
     created_at: string;
   }
   
-  // DTO dla produktu dopasowanego przez OCR (dla MVP: logika oparta na prostym SELECT, porównująca dokładnie nazwę)
+  // Parametry zapytania dla listowania produktów
+export interface ListProductsQuery {
+  page?: number;
+  limit?: number;
+  filter?: string; // JSON string
+  sort?: string;
+}
+
+// DTO dla metadanych paginacji
+export interface PaginationMetaDTO {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+}
+
+// DTO odpowiedzi dla listy produktów
+export interface ListProductsResponseDTO {
+  products: ProductDTO[];
+  pagination: PaginationMetaDTO;
+}
+
+// Typy dla filtrowania
+export interface ProductFilter {
+  category_id?: string;
+  product_name?: string;
+}
+
+// Typy dla sortowania
+export type ProductSortField = 'nazwa_produktu' | 'created_at' | 'updated_at';
+export type SortOrder = 'asc' | 'desc';
+export interface ProductSort {
+  field: ProductSortField;
+  order: SortOrder;
+}
+
+// DTO dla produktu dopasowanego przez OCR (dla MVP: logika oparta na prostym SELECT, porównująca dokładnie nazwę)
   export interface MatchedProductDTO {
     nazwa_produktu: string;
     // kategoria_id jest opcjonalne, gdy SELECT nie zwróci dopasowania
