@@ -116,6 +116,109 @@ export const GET: APIRoute = async ({ params, locals }) => {
 };
 
 /**
+ * DELETE /api/products/{id}
+ * Endpoint do usuwania produktu
+ *
+ * Path params: id (UUID produktu)
+ *
+ * Zwraca:
+ * - 200 OK - produkt został usunięty
+ * - 400 Bad Request - nieprawidłowy format UUID
+ * - 404 Not Found - produkt nie istnieje
+ * - 500 Internal Server Error - błąd serwera
+ */
+export const DELETE: APIRoute = async ({ params, locals }) => {
+  try {
+    // Pobranie klienta Supabase z kontekstu middleware
+    const supabase = locals.supabase;
+
+    if (!supabase) {
+      return new Response(
+        JSON.stringify({
+          error: 'Supabase client not available',
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    // Walidacja parametru path 'id' za pomocą Zod
+    const validationResult = getProductParamsSchema.safeParse(params);
+
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: 'Błąd walidacji parametrów',
+          details: validationResult.error.flatten().fieldErrors,
+        }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    const { id: productId } = validationResult.data;
+
+    // Utworzenie instancji serwisu produktów
+    const productsService = new ProductsService(supabase);
+
+    // Usunięcie produktu
+    await productsService.deleteProduct(productId);
+
+    // Zwrócenie potwierdzenia usunięcia
+    return new Response(
+      JSON.stringify({
+        message: 'Product deleted successfully',
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (error) {
+    // Obsługa błędów biznesowych z service
+    if (error instanceof Error) {
+      // 404 - Produkt nie znaleziony
+      if (error.message.includes('nie został znaleziony')) {
+        return new Response(
+          JSON.stringify({ error: error.message }),
+          {
+            status: 404,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
+    }
+
+    // Ogólny błąd serwera
+    console.error('Błąd podczas usuwania produktu:', error);
+
+    return new Response(
+      JSON.stringify({
+        error: 'Wystąpił błąd serwera podczas usuwania produktu',
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+};
+
+/**
  * PUT /api/products/{id}
  * Endpoint do aktualizacji szczegółów produktu
  *

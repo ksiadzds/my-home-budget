@@ -405,5 +405,40 @@ export class ProductsService {
       updated_at: updatedProduct.updated_at,
     };
   }
+
+  /**
+   * Usuwa produkt z bazy danych
+   * 
+   * @param productId - ID produktu do usunięcia
+   * @returns void
+   * @throws Error gdy produkt nie istnieje
+   * @throws Error w przypadku błędów bazodanowych
+   */
+  async deleteProduct(productId: string): Promise<void> {
+    // 1. Sprawdzenie czy produkt istnieje
+    const { data: existingProduct, error: fetchError } = await this.supabase
+      .from('produkty')
+      .select('id')
+      .eq('id', productId)
+      .maybeSingle();
+
+    if (fetchError) {
+      throw new Error(`Błąd podczas pobierania produktu: ${fetchError.message}`);
+    }
+
+    if (!existingProduct) {
+      throw new Error('Produkt nie został znaleziony');
+    }
+
+    // 2. Usunięcie produktu
+    const { error: deleteError } = await this.supabase
+      .from('produkty')
+      .delete()
+      .eq('id', productId);
+
+    if (deleteError) {
+      throw new Error(`Nie udało się usunąć produktu: ${deleteError.message}`);
+    }
+  }
 }
 
