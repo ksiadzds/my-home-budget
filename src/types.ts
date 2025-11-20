@@ -10,7 +10,7 @@ export interface CategoryDTO {
   export interface ProductDTO {
     id: string;
     nazwa_produktu: string;
-    kategoria_id: string;
+    kategoria_id: string | null; // Nullable - produkt może nie mieć przypisanej kategorii
     user_id: string;
     created_at: string;
     updated_at: string;
@@ -18,6 +18,7 @@ export interface CategoryDTO {
   
   // Command model do tworzenia produktu - wykorzystuje definicję z encji "produkty"
   // Wyklucza pola zarządzane automatycznie: id, user_id, created_at, updated_at
+  // kategoria_id jest opcjonalne - produkt może być utworzony bez kategorii (np. przez OCR)
   export type CreateProductCommand = Omit<ProductDTO, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
   
   // Command model do aktualizacji produktu - struktura identyczna jak przy tworzeniu

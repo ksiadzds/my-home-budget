@@ -78,14 +78,14 @@
 2. **Create a Product**
    - **Method:** POST  
    - **URL:** `/api/products`  
-   - **Description:** Create a new product for the authenticated user.
+   - **Description:** Create a new product for the authenticated user. Category is optional - products can be created without a category (e.g., during OCR processing) and assigned later.
    - **Request JSON Body:**
     
      {
        "nazwa_produktu": "string",
-       "kategoria_id": "uuid"
+       "kategoria_id": "uuid | null" // Optional - can be null for products without category
      }
-        - **Response:**  
+       - **Response:**
     
      {
        "message": "Product created successfully",
@@ -125,16 +125,16 @@
 4. **Update a Product**
    - **Method:** PUT  
    - **URL:** `/api/products/{id}`  
-   - **Description:** Update a product’s details (e.g., change product name or reassign category).
+   - **Description:** Update a product's details (e.g., change product name or reassign/remove category). This endpoint is used both for standard updates and for assigning categories to products created without one (e.g., from OCR processing).
    - **Path Parameters:**  
      - `id` (UUID of the product)
    - **Request JSON Body:**
     
      {
        "nazwa_produktu": "string",
-       "kategoria_id": "uuid"
+       "kategoria_id": "uuid | null" // Can be null to remove category assignment
      }
-        - **Response:**  
+       - **Response:**
     
      {
        "message": "Product updated successfully",
@@ -153,7 +153,7 @@
 5. **Delete a Product**
    - **Method:** DELETE  
    - **URL:** `/api/products/{id}`  
-   - **Description:** Remove a product from the authenticated user’s collection.
+   - **Description:** Remove a product from the authenticated user's collection.
    - **Path Parameters:**  
      - `id` (UUID of the product)
    - **Response:**  
@@ -161,35 +161,8 @@
      {
        "message": "Product deleted successfully"
      }
-        - **Success Codes:** 200 OK  
+       - **Success Codes:** 200 OK  
    - **Errors:** 404 Not Found, 401 Unauthorized
-
-6. **Assign Category to a Product** (Manual Override)
-   - **Method:** POST  
-   - **URL:** `/api/products/{id}/assign-category`  
-   - **Description:** Manually assign or change the category for a product (used when automatic matching fails).  
-   - **Path Parameters:**  
-     - `id` (UUID of the product)
-   - **Request JSON Body:**
-    
-     {
-       "kategoria_id": "uuid"
-     }
-        - **Response:**  
-    
-     {
-       "message": "Category assigned successfully",
-       "product": {
-         "id": "uuid",
-         "nazwa_produktu": "string",
-         "kategoria_id": "uuid",
-         "user_id": "uuid",
-         "created_at": "timestamp",
-         "updated_at": "timestamp"
-       }
-     }
-        - **Success Codes:** 200 OK  
-   - **Errors:** 400 Bad Request, 404 Not Found, 401 Unauthorized
 
 ---
 
@@ -198,7 +171,7 @@
 1. **Upload and Process Receipt**
    - **Method:** POST  
    - **URL:** `/api/receipts/process`  
-   - **Description:** Upload a receipt image for OCR processing. The endpoint processes the image, performs OCR, and automatically matches recognized products against the database.
+   - **Description:** Upload a receipt image for OCR processing. The endpoint processes the image, performs OCR, automatically matches recognized products against the database, and returns an aggregated summary of expenses by category.
    - **Request:**  
      - Form Data with:  
        - `receipt`: (image file)  
@@ -210,39 +183,32 @@
          {
            "nazwa_produktu": "string",
            "kategoria_id": "uuid (if matched)",
-           "confidence": "number"
+           "confidence": "number",
+           "price": "number"
          }
        ],
        "unmatched_products": [
          {
            "nazwa_produktu": "string",
+           "price": "number",
            "suggested_categories": [
              { "id": "uuid", "nazwa_kategorii": "string" }
            ]
          }
-       ]
+       ],
+       "summary": {
+         "by_category": [
+           {
+             "category": { "id": "uuid", "nazwa_kategorii": "string" },
+             "total_expense": "number",
+             "items_count": "number"
+           }
+         ],
+         "total": "number"
+       }
      }
-        - **Success Codes:** 200 OK  
+       - **Success Codes:** 200 OK  
    - **Errors:** 400 Bad Request (if file is missing or format invalid), 500 Server Error (for processing failures)
-
-2. **Get Receipt OCR Summary (Transient)**
-   - **Method:** GET  
-   - **URL:** `/api/receipts/{receiptId}/summary`  
-   - **Description:** Retrieve a one-time summary of expenses by category generated from the receipt OCR processing. Note: this summary is temporary and not stored long-term.
-   - **Path Parameters:**  
-     - `receiptId`: Identifier for the OCR process (if tracking is implemented)
-   - **Response:**  
-    
-     {
-       "summary": [
-         {
-           "category": { "id": "uuid", "nazwa_kategorii": "string" },
-           "total_expense": "number"
-         }
-       ]
-     }
-        - **Success Codes:** 200 OK  
-   - **Errors:** 404 Not Found, 401 Unauthorized
 
 ---
 
@@ -302,7 +268,7 @@
     
   - **Automatic Matching vs. Manual Intervention:**  
     If a product is automatically matched (green-status in the UI as per PRD), it is returned as a matched product; otherwise, it appears in the `unmatched_products` list with suggested categories for manual assignment.  
-    For manual overrides, the `/api/products/{id}/assign-category` endpoint lets the user assign or change a category.
+    For manual category assignment, use the `PUT /api/products/{id}` endpoint to update the product with the desired category.
   
   - **Expense Summary:**  
     After OCR processing and manual verification, the API generates a temporary summary of expenses grouped by category. The summary is used solely for user display and is not stored persistently.

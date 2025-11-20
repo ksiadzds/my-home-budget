@@ -4,6 +4,7 @@ import { z } from 'zod';
 /**
  * Schemat walidacji dla tworzenia produktu
  * Sprawdza poprawność nazwy produktu oraz format UUID kategorii
+ * kategoria_id jest opcjonalne - produkty mogą być tworzone bez kategorii (np. przez OCR)
  */
 export const createProductSchema = z.object({
   nazwa_produktu: z
@@ -13,7 +14,9 @@ export const createProductSchema = z.object({
     .max(255, 'Nazwa produktu nie może przekraczać 255 znaków'),
   kategoria_id: z
     .string()
-    .uuid('Nieprawidłowy format UUID dla kategoria_id'),
+    .uuid('Nieprawidłowy format UUID dla kategoria_id')
+    .nullable()
+    .optional(),
 });
 
 /**

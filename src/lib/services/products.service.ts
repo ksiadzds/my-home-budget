@@ -23,26 +23,28 @@ export class ProductsService {
    * 
    * @param userId - ID użytkownika tworzącego produkt
    * @param nazwaproduktu - Nazwa produktu
-   * @param kategoriaId - ID kategorii, do której należy produkt
+   * @param kategoriaId - ID kategorii (opcjonalne) - null jeśli produkt nie ma jeszcze przypisanej kategorii
    * @returns ProductDTO nowo utworzonego produktu
    * @throws Error gdy produkt o takiej nazwie już istnieje dla użytkownika
-   * @throws Error gdy kategoria nie istnieje
+   * @throws Error gdy kategoria_id podane ale kategoria nie istnieje
    * @throws Error w przypadku innych błędów bazodanowych
    */
   async createProduct(
     userId: string,
     nazwaProductu: string,
-    kategoriaId: string
+    kategoriaId: string | null | undefined
   ): Promise<ProductDTO> {
-    // Sprawdzenie czy kategoria istnieje
-    const { data: category, error: categoryError } = await this.supabase
-      .from('kategorie')
-      .select('id')
-      .eq('id', kategoriaId)
-      .single();
+    // Sprawdzenie czy kategoria istnieje (tylko jeśli kategoriaId jest podane)
+    if (kategoriaId) {
+      const { data: category, error: categoryError } = await this.supabase
+        .from('kategorie')
+        .select('id')
+        .eq('id', kategoriaId)
+        .single();
 
-    if (categoryError || !category) {
-      throw new Error('Kategoria nie istnieje');
+      if (categoryError || !category) {
+        throw new Error('Kategoria nie istnieje');
+      }
     }
 
     // Sprawdzenie czy produkt już istnieje dla użytkownika
@@ -67,7 +69,7 @@ export class ProductsService {
       .insert({
         user_id: userId,
         nazwa_produktu: nazwaProductu,
-        kategoria_id: kategoriaId,
+        kategoria_id: kategoriaId || null,
       })
       .select()
       .single();
@@ -323,26 +325,28 @@ export class ProductsService {
    * 
    * @param productId - ID produktu do aktualizacji
    * @param nazwaProductu - Nowa nazwa produktu
-   * @param kategoriaId - Nowe ID kategorii
+   * @param kategoriaId - Nowe ID kategorii (opcjonalne) - null jeśli kategoria ma być usunięta
    * @returns Zaktualizowany ProductDTO
    * @throws Error gdy produkt nie istnieje
-   * @throws Error gdy kategoria nie istnieje
+   * @throws Error gdy kategoria_id podane ale kategoria nie istnieje
    * @throws Error gdy nowa nazwa narusza constraint unikalności
    */
   async updateProduct(
     productId: string,
     nazwaProductu: string,
-    kategoriaId: string
+    kategoriaId: string | null | undefined
   ): Promise<ProductDTO> {
-    // 1. Sprawdzenie czy kategoria istnieje
-    const { data: category, error: categoryError } = await this.supabase
-      .from('kategorie')
-      .select('id')
-      .eq('id', kategoriaId)
-      .single();
+    // 1. Sprawdzenie czy kategoria istnieje (tylko jeśli kategoriaId jest podane)
+    if (kategoriaId) {
+      const { data: category, error: categoryError } = await this.supabase
+        .from('kategorie')
+        .select('id')
+        .eq('id', kategoriaId)
+        .single();
 
-    if (categoryError || !category) {
-      throw new Error('Kategoria nie istnieje');
+      if (categoryError || !category) {
+        throw new Error('Kategoria nie istnieje');
+      }
     }
 
     // 2. Pobranie istniejącego produktu
@@ -384,7 +388,7 @@ export class ProductsService {
       .from('produkty')
       .update({
         nazwa_produktu: nazwaProductu,
-        kategoria_id: kategoriaId,
+        kategoria_id: kategoriaId || null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', productId)

@@ -19,7 +19,7 @@ This table is managed by Supabase Auth.
 ### Tabela: produkty
 - **id**: UUID, PRIMARY KEY, NOT NULL, DEFAULT uuid_generate_v4()
 - **nazwa_produktu**: VARCHAR(255), NOT NULL
-- **kategoria_id**: UUID, NOT NULL, REFERENCES kategorie(id) ON DELETE RESTRICT
+- **kategoria_id**: UUID, NULL, REFERENCES kategorie(id) ON DELETE RESTRICT (nullable - produkty mogą być utworzone bez kategorii, np. przez OCR)
 - **user_id**: UUID NOT NULL REFERENCES users(id)
 - **created_at**: TIMESTAMP WITH TIME ZONE, NOT NULL, DEFAULT NOW()
 - **updated_at**: TIMESTAMP WITH TIME ZONE, NOT NULL, DEFAULT NOW()
@@ -36,7 +36,7 @@ This table is managed by Supabase Auth.
 
 ## 2. Relacje między tabelami
 
-- Tabela `produkty` posiada relację wiele-do-jednego z tabelą `kategorie` poprzez kolumnę `kategoria_id`.
+- Tabela `produkty` posiada relację wiele-do-jednego z tabelą `kategorie` poprzez kolumnę `kategoria_id` (opcjonalną - produkt może nie mieć przypisanej kategorii).
 - Tabela `produkty` posiada relację wiele-do-jednego z tabelą `users` poprzez kolumnę `user_id`.
 - Tabela `ocr_error_logs` posiada relację wiele-do-jednego z tabelą `users` poprzez kolumnę `user_id`.
 
@@ -57,3 +57,4 @@ This table is managed by Supabase Auth.
 - Pola audytowe (`created_at`, `updated_at`) służą do śledzenia wersji i zmian rekordów.
 - Tabela `ocr_error_logs` służy do rejestrowania problemów z przetwarzaniem OCR oraz błędów podczas generowania podsumowań wydatków.
 - Logika biznesowa oraz operacje CRUD będą obsługiwane na poziomie aplikacji, a nie poprzez wyzwalacze lub procedury składowane.
+- Kolumna `kategoria_id` w tabeli `produkty` jest nullable, co umożliwia tworzenie produktów bez kategorii (np. podczas przetwarzania OCR). Kategorie mogą być przypisane później za pomocą endpointu `PUT /api/products/{id}`.
