@@ -89,13 +89,22 @@ export interface ProductSort {
     // kategoria_id jest opcjonalne, gdy SELECT nie zwróci dopasowania
     kategoria_id?: string;
     confidence: number;
+    price: number;
 }
   
   // DTO dla produktu niezidentyfikowanego przez OCR, który wymaga manualnego przypisania
   export interface UnmatchedProductDTO {
     nazwa_produktu: string;
+    price: number;
     // Lista sugerowanych kategorii oparta na CategoryDTO
     suggested_categories: CategoryDTO[];
+  }
+  
+  // DTO jednego wpisu podsumowania, zawiera kategorię oraz łączny koszt
+  export interface SummaryItemDTO {
+    category: CategoryDTO;
+    total_expense: number;
+    items_count: number;
   }
   
   // DTO odpowiedzi z endpointu przetwarzania paragonu
@@ -103,12 +112,10 @@ export interface ProductSort {
     message: string;
     matched_products: MatchedProductDTO[];
     unmatched_products: UnmatchedProductDTO[];
-  }
-  
-  // DTO jednego wpisu podsumowania, zawiera kategorię oraz łączny koszt
-  export interface SummaryItemDTO {
-    category: CategoryDTO;
-    total_expense: number;
+    summary: {
+      by_category: SummaryItemDTO[];
+      total: number;
+    };
   }
   
   // DTO odpowiedzi z endpointu podsumowania OCR, zawiera listę podsumowań
