@@ -146,6 +146,83 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // 6. Agregacja i generowanie podsumowania wydatków
     // 7. Obsługa błędów i logowanie do ocr_error_logs
 
+    // MOCK: Tymczasowe dane do testowania UI (usuń po implementacji OCR)
+    const USE_MOCK_DATA = true; // Zmień na false po implementacji OCR
+    
+    if (USE_MOCK_DATA) {
+      // Pobierz kategorie do mocka
+      const { data: categories } = await supabase
+        .from('kategorie')
+        .select('*')
+        .order('nazwa_kategorii');
+
+      const allCategories = categories || [];
+      
+      // Znajdź konkretne kategorie do mocka
+      const zakupyKategoria = allCategories.find(c => c.nazwa_kategorii === 'Zakupy spożywcze');
+      const napoje = allCategories.find(c => c.nazwa_kategorii === 'Napoje');
+      const slodycze = allCategories.find(c => c.nazwa_kategorii === 'Słodycze i przekąski');
+
+      return new Response(
+        JSON.stringify({
+          message: 'Paragon został przetworzony pomyślnie (mock data)',
+          matched_products: [
+            {
+              nazwa_produktu: 'Chleb pszenny',
+              kategoria_id: zakupyKategoria?.id,
+              confidence: 0.95,
+              price: 4.50,
+            },
+            {
+              nazwa_produktu: 'Mleko 2%',
+              kategoria_id: zakupyKategoria?.id,
+              confidence: 0.92,
+              price: 3.20,
+            },
+            {
+              nazwa_produktu: 'Coca-Cola 2L',
+              kategoria_id: napoje?.id,
+              confidence: 0.88,
+              price: 5.99,
+            },
+          ],
+          unmatched_products: [
+            {
+              nazwa_produktu: 'Baton czekoladowy',
+              price: 2.50,
+              suggested_categories: slodycze ? [slodycze] : allCategories.slice(0, 3),
+            },
+            {
+              nazwa_produktu: 'Chipsy paprykowe',
+              price: 4.20,
+              suggested_categories: slodycze ? [slodycze] : allCategories.slice(0, 3),
+            },
+          ],
+          summary: {
+            by_category: [
+              {
+                category: zakupyKategoria || { id: '1', nazwa_kategorii: 'Zakupy spożywcze' },
+                total_expense: 7.70,
+                items_count: 2,
+              },
+              {
+                category: napoje || { id: '2', nazwa_kategorii: 'Napoje' },
+                total_expense: 5.99,
+                items_count: 1,
+              },
+            ],
+            total: 13.69,
+          },
+        }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
     // Zwracamy domyślny response zgodny z ReceiptProcessingResponseDTO
     // Na razie bez faktycznego przetwarzania OCR
     return new Response(

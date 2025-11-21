@@ -122,3 +122,122 @@ export interface ProductSort {
   export interface ReceiptSummaryDTO {
     summary: SummaryItemDTO[];
   }
+
+  // =========================================
+  // TYPY DLA WIDOKU DASHBOARD
+  // =========================================
+
+  /**
+   * Krok przepływu w widoku Dashboard
+   * 
+   * @typedef {string} DashboardStep
+   * @property {'idle'} idle - Stan początkowy, widoczny uploader
+   * @property {'processing'} processing - Przetwarzanie OCR, widoczny loader
+   * @property {'result'} result - Wyniki OCR, widoczna weryfikacja i podsumowanie
+   */
+  export type DashboardStep = 'idle' | 'processing' | 'result';
+
+  /**
+   * Wiersz produktu dopasowanego automatycznie przez OCR
+   * 
+   * @interface MatchedRow
+   * @description
+   * Reprezentuje produkt, który został automatycznie dopasowany do kategorii.
+   * Wyświetlany w VerificationList z zielonym tłem (read-only).
+   */
+  export interface MatchedRow {
+    /** Typ wiersza dla discriminated union */
+    type: 'matched';
+    
+    /** Lokalne UUID wiersza generowane przez klienta (crypto.randomUUID) */
+    id: string;
+    
+    /** Nazwa produktu rozpoznana przez OCR */
+    nazwa_produktu: string;
+    
+    /** UUID kategorii jeśli wykryto dopasowanie */
+    kategoria_id?: string;
+    
+    /** Cena produktu w PLN */
+    price: number;
+  }
+
+  /**
+   * Wiersz produktu niedopasowanego wymagającego ręcznej kategoryzacji
+   * 
+   * @interface UnmatchedRow
+   * @description
+   * Reprezentuje produkt, który nie został automatycznie dopasowany.
+   * Wymaga ręcznego wyboru kategorii przez użytkownika.
+   * Wyświetlany w VerificationList z pomarańczowym tłem (edytowalny).
+   */
+  export interface UnmatchedRow {
+    /** Typ wiersza dla discriminated union */
+    type: 'unmatched';
+    
+    /** Lokalne UUID wiersza generowane przez klienta */
+    id: string;
+    
+    /** Nazwa produktu rozpoznana przez OCR */
+    nazwa_produktu: string;
+    
+    /** Cena produktu w PLN */
+    price: number;
+    
+    /** Lista sugerowanych kategorii z OCR (fallback: wszystkie kategorie) */
+    suggested_categories: CategoryDTO[];
+    
+    /** UUID kategorii wybranej przez użytkownika */
+    selected_category_id?: string;
+    
+    /** Flaga zapisu do bazy (blokuje CategorySelect) */
+    isSaving: boolean;
+    
+    /** UUID utworzonego produktu po pomyślnym POST /api/products */
+    created_product_id?: string;
+    
+    /** Komunikat błędu z ostatniej mutacji (duplikat, FK, 500) */
+    error_message?: string;
+  }
+
+  /**
+   * Discriminated union wierszy weryfikacji (matched | unmatched)
+   * 
+   * @typedef {MatchedRow | UnmatchedRow} VerificationRow
+   * @description
+   * Używane w VerificationList do renderowania różnych typów wierszy.
+   * TypeScript automatycznie zawęża typ na podstawie pola 'type'.
+   */
+  export type VerificationRow = MatchedRow | UnmatchedRow;
+
+  /**
+   * Model widoku dla wyników OCR
+   * 
+   * @interface OcrResultViewModel
+   * @description
+   * Zmapowana odpowiedź z API ReceiptProcessingResponseDTO.
+   * Zawiera wiersze weryfikacji i podsumowanie wydatków.
+   * Lokalne ID wierszy generowane przez klienta dla reaktywności.
+   */
+  export interface OcrResultViewModel {
+    /** Lista produktów dopasowanych automatycznie */
+    matched_rows: MatchedRow[];
+    
+    /** Lista produktów wymagających ręcznej kategoryzacji */
+    unmatched_rows: UnmatchedRow[];
+    
+    /** Podsumowanie wydatków wg kategorii z OCR */
+    summary: ReceiptProcessingResponseDTO['summary'];
+  }
+
+  /**
+   * Błąd walidacji pliku w komponencie UploadDropzone
+   * 
+   * @typedef {Object} UploadValidationError
+   * @description
+   * Discriminated union błędów walidacji uploadu.
+   * Zawiera kod błędu i czytelny komunikat dla użytkownika.
+   */
+  export type UploadValidationError =
+    | { code: 'invalid_type'; message: string }
+    | { code: 'too_large'; message: string };
