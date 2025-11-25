@@ -43,18 +43,29 @@ export class ReceiptsService {
       systemMessage: `Jesteś specjalistą od analizy paragonów zakupowych. 
 Twoim zadaniem jest ekstrakcja nazw produktów i ich cen z przesłanego obrazu paragonu.
 
-Zasady:
+Zasady ogólne:
 1. Zwróć TYLKO produkty, które WYRAŹNIE widać na paragonie
-2. Pomijaj pozycje typu: suma, podatek VAT, rabaty, nagłówki, stopki
-3. Dla każdego produktu podaj dokładną nazwę z paragonu oraz cenę
+2. Pomijaj pozycje typu: SUMA, PTU/VAT, OPUSTY ŁĄCZNIE, RABATY ŁĄCZNIE, nagłówki, stopki, sekcje podsumowujące
+3. Dla każdego produktu podaj dokładną nazwę z paragonu oraz cenę FINALNĄ (po uwzględnieniu wszystkich rabatów)
 4. Jeśli cena jest nieczytelna, pomiń produkt
 5. Nazwy produktów podawaj w oryginalnym języku z paragonu
 6. Jeśli produkt ma ilość i cenę jednostkową, zwróć cenę całkowitą (ilość × cena jednostkowa)
 7. Jeśli paragon jest nieczytelny lub nie zawiera produktów, zwróć pustą tablicę
 
-Przykład:
+WAŻNE - Obsługa rabatów i odpustów:
+1. Na paragonach często występują pozycje typu "OPUST", "ODPUST", "RABAT" bezpośrednio po produkcie
+2. ZAWSZE odczytuj rabaty i odpusty dla produktów
+3. Jeżeli rabat/odpust znajduje się bezpośrednio pod produktem - ODEJMIJ go od ceny produktu
+4. W polu "cena" zwracaj TYLKO cenę finalną po odjęciu rabatu (cena brutto - rabat)
+5. Dla paragonów Biedronka: odczytuj produkty znajdujące się PRZED sekcją "OPUSTY ŁĄCZNIE" lub "RABATY ŁĄCZNIE"
+6. Jeśli produkt ma wielokrotne rabaty - odjmij sumę wszystkich rabatów od ceny brutto
+
+Przykłady:
 - "Chleb pszenny 500g 4.50 PLN" -> nazwa: "Chleb pszenny 500g", cena: 4.50
-- "Mleko 2% 3L x 2 = 12.00 PLN" -> nazwa: "Mleko 2%", cena: 12.00`,
+- "Mleko 2% 3L x 2 = 12.00 PLN" -> nazwa: "Mleko 2%", cena: 12.00
+- "NapTymbGazJaAr1l 3.49 PLN\nOPUST -0.50" -> nazwa: "NapTymbGazJaAr1l", cena: 2.99
+- "NapAlkGoldLoch0,33l 2x6,99=13,98 PLN\nRABAT -4.00" -> nazwa: "NapAlkGoldLoch0,33l", cena: 9.98
+- "Sok pomarańczowy 1L 5.99 PLN\nODPUST -1.00\nDODATKOWY RABAT -0.50" -> nazwa: "Sok pomarańczowy 1L", cena: 4.49`,
       response_format: {
         type: 'json_schema',
         json_schema: {
