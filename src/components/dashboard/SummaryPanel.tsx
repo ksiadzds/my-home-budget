@@ -21,14 +21,11 @@ interface SummaryPanelProps {
  * Wyświetla agregację kosztów z paragonu pogrupowaną według kategorii
  * oraz sumę całkowitą wszystkich wydatków.
  * 
- * ## Dane nietrwałe:
- * W wersji MVP podsumowanie pochodzi wyłącznie z odpowiedzi OCR i nie jest
- * przeliczane po stronie klienta po edycjach użytkownika.
- * 
- * Oznacza to:
- * - Jeśli użytkownik zmieni kategorię produktu, podsumowanie się NIE zaktualizuje
- * - Aby zaktualizować podsumowanie, trzeba ponownie wgrać paragon
- * - W przyszłych wersjach można dodać klientowe przeliczanie
+ * ## Przeliczanie na bieżąco:
+ * Podsumowanie jest aktualizowane automatycznie po wyborze kategorii
+ * przez użytkownika. DashboardView przelicza je na podstawie:
+ * - Matched products (automatycznie dopasowane)
+ * - Unmatched products z wybraną kategorią (zapisane pomyślnie)
  * 
  * ## Struktura danych:
  * ```typescript
@@ -52,7 +49,7 @@ interface SummaryPanelProps {
  * @param {SummaryPanelProps} props
  * @returns {JSX.Element}
  * 
- * @version 1.0.0 MVP
+ * @version 1.1.0
  * @since 2025-01-21
  */
 export function SummaryPanel({ summary }: SummaryPanelProps) {

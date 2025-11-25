@@ -202,14 +202,82 @@ export function DashboardView() {
   }
 
   /**
+   * Przelicza podsumowanie wydatków na podstawie aktualnych wierszy
+   * 
+   * @function recalculateSummary
+   * @description
+   * Przelicza podsumowanie wydatków na podstawie:
+   * 1. Wszystkich matched products
+   * 2. Unmatched products, które mają przypisaną kategorię (selected_category_id)
+   * 
+   * @param rows - Aktualne wiersze (matched + unmatched)
+   * @returns Nowe podsumowanie
+   */
+  function recalculateSummary(
+    matchedRows: MatchedRow[],
+    unmatchedRows: UnmatchedRow[]
+  ): ReceiptProcessingResponseDTO['summary'] {
+    // Mapa: kategoria_id -> { total, count }
+    const categoryMap = new Map<string, { total: number; count: number }>();
+
+    // Dodaj matched products
+    for (const row of matchedRows) {
+      if (row.kategoria_id) {
+        const current = categoryMap.get(row.kategoria_id) || { total: 0, count: 0 };
+        categoryMap.set(row.kategoria_id, {
+          total: current.total + row.price,
+          count: current.count + 1,
+        });
+      }
+    }
+
+    // Dodaj unmatched products z wybraną kategorią
+    for (const row of unmatchedRows) {
+      if (row.selected_category_id && row.created_product_id) {
+        const current = categoryMap.get(row.selected_category_id) || { total: 0, count: 0 };
+        categoryMap.set(row.selected_category_id, {
+          total: current.total + row.price,
+          count: current.count + 1,
+        });
+      }
+    }
+
+    // Generuj podsumowanie wg kategorii
+    const summaryItems = Array.from(categoryMap.entries()).map(([categoryId, stats]) => {
+      const category = categories.find(c => c.id === categoryId);
+      return {
+        category: category || { id: categoryId, nazwa_kategorii: 'Nieznana' },
+        total_expense: Math.round(stats.total * 100) / 100,
+        items_count: stats.count,
+      };
+    });
+
+    // Sortuj według największych wydatków
+    summaryItems.sort((a, b) => b.total_expense - a.total_expense);
+
+    // Oblicz sumę całkowitą
+    const total = summaryItems.reduce((sum, item) => sum + item.total_expense, 0);
+
+    return {
+      by_category: summaryItems,
+      total: Math.round(total * 100) / 100,
+    };
+  }
+
+  /**
    * Obsługa zmiany kategorii dla wiersza unmatched
    * 
    * @async
    * @function handleRowCategoryChange
    * @description
    * Callback wywoływany przez VerificationList przy zmianie kategorii.
-   * Automatycznie zapisuje produkt do bazy poprzez POST `/api/products`.
+   * 
+   * **Logika:**
+   * - Jeśli produkt nie został jeszcze zapisany → CREATE (POST /api/products)
+   * - Jeśli produkt już istnieje (created_product_id) → UPDATE (PUT /api/products/{id})
+   * 
    * Aktualizuje stan wiersza: isSaving → created_product_id lub error_message.
+   * AKTUALIZUJE PODSUMOWANIE po pomyślnym zapisie.
    * 
    * @param {string} rowId - Lokalne UUID wiersza (z OcrResultViewModel)
    * @param {string} categoryId - UUID wybranej kategorii
@@ -240,18 +308,35 @@ export function DashboardView() {
       unmatched_rows: updatedRows,
     });
 
-    // Wywołaj API
+    // Wywołaj API - CREATE lub UPDATE
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nazwa_produktu: row.nazwa_produktu,
-          kategoria_id: categoryId,
-        }),
-      });
+      let response: Response;
+      
+      if (row.created_product_id) {
+        // Produkt już istnieje → UPDATE
+        response = await fetch(`/api/products/${row.created_product_id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nazwa_produktu: row.nazwa_produktu,
+            kategoria_id: categoryId,
+          }),
+        });
+      } else {
+        // Nowy produkt → CREATE
+        response = await fetch('/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nazwa_produktu: row.nazwa_produktu,
+            kategoria_id: categoryId,
+          }),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Błąd serwera' }));
@@ -271,9 +356,13 @@ export function DashboardView() {
         error_message: undefined,
       };
       
+      // PRZELICZ PODSUMOWANIE
+      const newSummary = recalculateSummary(ocrResult.matched_rows, successRows);
+      
       setOcrResult({
         ...ocrResult,
         unmatched_rows: successRows,
+        summary: newSummary, // Zaktualizowane podsumowanie!
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Nieznany błąd';
