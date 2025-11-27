@@ -27,47 +27,54 @@ Problem: Użytkownicy często rezygnują z ręcznego wprowadzania wydatków do a
 ## 5. Historyjki użytkowników
 
 US-001
-Tytuł: Uwierzytelnianie i autoryzacja
-Opis: Jako użytkownik chcę móc się zarejestrować i zalogować, aby uzyskać dostęp do mojego konta oraz do mojej spersonalizowanej bazy produktów.
+Tytuł: Rejestracja konta
+Opis: Jako nowy użytkownik chcę się zarejestrować, aby mieć dostęp do własnej bazy produktów i móc analizować swoje paragony.
 Kryteria akceptacji:
-- Użytkownik może zarejestrować nowe konto przy użyciu unikalnego adresu e-mail oraz hasła.
-- Użytkownik może zalogować się poprawnie, korzystając z poprawnych danych.
-- System zabezpiecza dane użytkownika i zapewnia bezpieczną sesję.
+- Formularz rejestracyjny zawiera pola na adres e-mail i hasło.
+- Po poprawnym wypełnieniu formularza i weryfikacji danych konto jest aktywowane.
+- Użytkownik otrzymuje potwierdzenie pomyślnej rejestracji i zostaje zalogowany.
 
 US-002
+Tytuł: Logowanie do aplikacji
+Opis: Jako zarejestrowany użytkownik chcę móc się zalogować, aby mieć dostęp do mojej bazy produktów i móc analizować paragony.
+Kryteria akceptacji:
+- Po podaniu prawidłowych danych logowania użytkownik zostaje przekierowany do strony dashboard, gdzie może załadować zdjęcie paragonu.
+- Błędne dane logowania wyświetlają komunikat o nieprawidłowych danych.
+- Dane dotyczące logowania przechowywane są w bezpieczny sposób.
+
+US-003
 Tytuł: Przesyłanie zdjęcia paragonu i OCR
-Opis: Jako użytkownik chcę przesłać zdjęcie paragonu, aby system mógł automatycznie odczytać nazwy produktów i ceny za pomocą technologii OCR.
+Opis: Jako zalogowany użytkownik chcę przesłać zdjęcie paragonu, aby system mógł automatycznie odczytać nazwy produktów i ceny za pomocą technologii OCR.
 Kryteria akceptacji:
 - Użytkownik ma możliwość przesłania zdjęcia paragonu (tylko z Biedronki).
 - System przesyła zdjęcie do modelu AI, który zwraca listę pozycji z nazwami i cenami.
 - W przypadku nieczytelności zdjęcia, system wyświetla czytelny komunikat o błędzie.
 
-US-003
+US-004
 Tytuł: Automatyczne dopasowanie produktów do kategorii
-Opis: Jako użytkownik chcę, aby system automatycznie dopasowywał rozpoznane produkty do istniejących w bazie kategorii, co pozwala na szybkie potwierdzenie poprawności danych.
+Opis: Jako zalogowany użytkownik chcę, aby system automatycznie dopasowywał rozpoznane produkty do istniejących w bazie kategorii, co pozwala na szybkie potwierdzenie poprawności danych.
 Kryteria akceptacji:
 - System porównuje rozpoznane pozycje z zapisanymi w bazie, uwzględniając wielkość liter.
 - Pozycje automatycznie dopasowane do bazy są oznaczone zielonym tłem w interfejsie weryfikacji.
 
-US-004
+US-005
 Tytuł: Ręczne przypisanie kategorii do nowych produktów
-Opis: Jako użytkownik chcę móc ręcznie przypisać kategorię do nowych, nierozpoznanych pozycji, aby uwzględnić je w podsumowaniu wydatków.
+Opis: Jako zalogowany użytkownik chcę móc ręcznie przypisać kategorię do nowych, nierozpoznanych pozycji, aby uwzględnić je w podsumowaniu wydatków.
 Kryteria akceptacji:
 - Nierozpoznane pozycje są oznaczone pomarańczowym tłem w interfejsie weryfikacji.
 - Użytkownik ma możliwość wyboru kategorii z rozwijanej listy dla każdej nierozpoznanej pozycji.
 - Po zatwierdzeniu przypisania kategorii, nowy produkt zostaje zapisany w bazie.
 
-US-005
+US-006
 Tytuł: Wyświetlanie podsumowania wydatków
-Opis: Jako użytkownik chcę otrzymać podsumowanie wydatków według kategorii po przetworzeniu paragonu, aby szybko ocenić rozkład wydatków.
+Opis: Jako zalogowany użytkownik chcę otrzymać podsumowanie wydatków według kategorii po przetworzeniu paragonu, aby szybko ocenić rozkład wydatków.
 Kryteria akceptacji:
 - System wyświetla listę kategorii z sumą wydatków dla każdej kategorii.
 - Podsumowanie jest generowane po zakończeniu weryfikacji pozycji przez użytkownika.
-- Wynik podsumowania nie jest trwale zapisywany w bazie danych.
 
-US-006
+US-007
 Tytuł: Zarządzanie produktami (CRUD)
-Opis: Jako użytkownik chcę mieć możliwość przeglądania, wyszukiwania, edycji oraz usuwania zapisanych produktów, aby zarządzać moją bazą mapowań produktów.
+Opis: Jako zalogowany użytkownik chcę mieć możliwość przeglądania, wyszukiwania, edycji oraz usuwania zapisanych produktów, aby zarządzać moją bazą mapowań produktów.
 Kryteria akceptacji:
 - Użytkownik ma dostęp do dedykowanej strony zarządzania produktami.
 - System umożliwia wyszukiwanie produktów według nazwy.

@@ -1,0 +1,57 @@
+---
+/**
+ * Strona logowania
+ * 
+ * @page /auth/login
+ * @description
+ * Strona z formularzem logowania do aplikacji.
+ * Wykorzystuje główny Layout i komponent LoginForm (React).
+ * 
+ * @remarks
+ * Zgodnie ze specyfikacją auth-spec.md:
+ * - Jeśli użytkownik już jest zalogowany → redirect do '/'
+ * - Wyświetla komunikat o sukcesie resetu hasła (query param)
+ * - Linki do rejestracji i resetu hasła
+ * 
+ * ## Przepływ:
+ * 1. Użytkownik wypełnia formularz (email, hasło)
+ * 2. Kliknięcie "Zaloguj się" → POST /api/auth/login
+ * 3. Po sukcesie: redirect do '/' lub redirectTo z query
+ * 4. Błąd: komunikat "Nieprawidłowy email lub hasło"
+ * 
+ * @version 1.0.0 MVP
+ * @since 2025-01-21
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { LoginForm } from '@/components/auth/LoginForm';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+// Sprawdź czy użytkownik jest już zalogowany
+const { user } = Astro.locals;
+if (user) {
+  return Astro.redirect('/');
+}
+
+// Sprawdź komunikaty w query params
+const resetSuccess = Astro.url.searchParams.get('reset') === 'success';
+---
+
+<Layout>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4 sm:p-8">
+    <div class="w-full max-w-md">
+      <!-- Komunikat o sukcesie resetu hasła -->
+      {resetSuccess && (
+        <Alert className="mb-6 bg-green-50 border-green-200">
+          <AlertDescription className="text-green-800">
+            Hasło zostało pomyślnie zresetowane. Możesz się teraz zalogować.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <!-- Formularz logowania -->
+      <LoginForm client:load />
+    </div>
+  </div>
+</Layout>
+
