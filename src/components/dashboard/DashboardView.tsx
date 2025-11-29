@@ -403,9 +403,17 @@ export function DashboardView() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">
-            Dashboard Budżetu Domowego
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-bold text-slate-900">
+              Dashboard Budżetu Domowego
+            </h1>
+            <a
+              href="/products"
+              className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-colors"
+            >
+              Zarządzaj produktami →
+            </a>
+          </div>
           <p className="text-slate-600">
             Wgraj paragon, aby automatycznie rozpoznać produkty i kategoryzować wydatki
           </p>

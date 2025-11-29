@@ -10,6 +10,11 @@ const { title = "My Home Budget" } = Astro.props;
 
 // Pobierz informacje o zalogowanym użytkowniku z middleware
 const user = Astro.locals.user;
+
+// Określ aktywną stronę na podstawie URL
+const currentPath = Astro.url.pathname;
+const isProductsPage = currentPath === '/products' || currentPath === '/products/';
+const isDashboardPage = currentPath === '/' || currentPath === '';
 ---
 
 <!doctype html>
@@ -27,10 +32,36 @@ const user = Astro.locals.user;
       <header class="border-b border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-800">
         <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
           <!-- Logo / Nazwa aplikacji -->
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-6">
             <h1 class="text-xl font-bold text-slate-900 dark:text-white">
               My Home Budget
             </h1>
+            
+            <!-- Linki nawigacyjne -->
+            <div class="hidden md:flex items-center space-x-4">
+              <a 
+                href="/" 
+                class:list={[
+                  "text-sm font-medium transition-colors",
+                  isDashboardPage 
+                    ? "text-slate-900 dark:text-white border-b-2 border-slate-900 dark:border-white pb-1" 
+                    : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                ]}
+              >
+                Dashboard
+              </a>
+              <a 
+                href="/products" 
+                class:list={[
+                  "text-sm font-medium transition-colors",
+                  isProductsPage 
+                    ? "text-slate-900 dark:text-white border-b-2 border-slate-900 dark:border-white pb-1" 
+                    : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                ]}
+              >
+                Produkty
+              </a>
+            </div>
           </div>
 
           <!-- Informacje o użytkowniku i przycisk wylogowania -->

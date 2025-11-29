@@ -241,3 +241,115 @@ export interface ProductSort {
   export type UploadValidationError =
     | { code: 'invalid_type'; message: string }
     | { code: 'too_large'; message: string };
+
+  // =========================================
+  // TYPY DLA WIDOKU PRODUCTS (CRUD)
+  // =========================================
+
+  /**
+   * ViewModel stanu widoku Produkty
+   * 
+   * @interface ProductsViewState
+   * @description
+   * Stan zarządzany przez komponent ProductsView.
+   * Zawiera dane produktów, kategorie, parametry zapytania i flagi stanu.
+   */
+  export interface ProductsViewState {
+    /** Lista produktów z aktualnej strony */
+    products: ProductDTO[];
+    
+    /** Metadane paginacji */
+    pagination: PaginationMetaDTO;
+    
+    /** Lista wszystkich kategorii (prefetch) */
+    categories: CategoryDTO[];
+    
+    /** Parametry zapytania do API */
+    queryParams: {
+      page: number;
+      limit: number;
+      filter?: ProductFilter;
+      sort?: ProductSort;
+    };
+    
+    /** Flagi stanu */
+    isLoadingProducts: boolean;
+    isLoadingCategories: boolean;
+    errorProducts?: string;
+    errorCategories?: string;
+    
+    /** Dialog potwierdzenia usunięcia */
+    confirmDialog: {
+      open: boolean;
+      productId?: string;
+      productName?: string;
+    };
+    
+    /** Flaga mutacji (edycja/usunięcie w toku) */
+    isMutating: boolean;
+  }
+
+  /**
+   * Parametry wyszukiwania produktów
+   * 
+   * @interface ProductSearchParams
+   * @description
+   * Parametry do konstruowania query string dla GET /api/products.
+   */
+  export interface ProductSearchParams {
+    page: number;
+    limit: number;
+    filter?: string; // JSON string: {"product_name": "mleko"}
+    sort?: string;   // Format: "nazwa_produktu:asc"
+  }
+
+  /**
+   * Typ pustego stanu widoku Products
+   * 
+   * @typedef {string} EmptyStateType
+   * @property {'no_products'} no_products - Brak produktów w bazie
+   * @property {'no_results'} no_results - Brak wyników wyszukiwania
+   */
+  export type EmptyStateType = 'no_products' | 'no_results';
+
+  /**
+   * Payload błędu mutacji produktu
+   * 
+   * @interface ProductMutationError
+   * @description
+   * Błąd zwracany z API podczas edycji lub usunięcia produktu.
+   */
+  export interface ProductMutationError {
+    error: string;
+    details?: Record<string, string[]>; // Zod validation errors
+  }
+
+  /**
+   * Request body dla PUT /api/products/{id}
+   */
+  export interface UpdateProductRequest {
+    nazwa_produktu: string;
+    kategoria_id: string | null;
+  }
+
+  /**
+   * Response body dla PUT /api/products/{id}
+   */
+  export interface UpdateProductResponse {
+    message: string;
+    product: ProductDTO;
+  }
+
+  /**
+   * Response body dla DELETE /api/products/{id}
+   */
+  export interface DeleteProductResponse {
+    message: string;
+  }
+
+  /**
+   * Response body dla GET /api/categories
+   */
+  export interface GetCategoriesResponse {
+    categories: CategoryDTO[];
+  }

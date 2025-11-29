@@ -55,7 +55,7 @@
 
 ### Widok: Produkty (CRUD)
 - **Ścieżka widoku**: `/products`  
-- **Główny cel**: przeglądanie, wyszukiwanie, edycja kategorii i usuwanie produktów użytkownika.  
+- **Główny cel**: przeglądanie, wyszukiwanie, edycja produktu z moliwością zmiany kategorii i usuwanie produktów użytkownika.  
 - **Kluczowe informacje do wyświetlenia**:
   - Tabela produktów z sortowaniem po `nazwa_produktu` ASC (case-insensitive, PL) i tie-breaker `updated_at DESC`.
   - Wyszukiwanie po nazwie (debounce 300 ms), paginacja z API.
