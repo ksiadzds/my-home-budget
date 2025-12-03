@@ -10,6 +10,9 @@ HomeBudget OCR is a web application designed to simplify expense tracking by aut
 - **Frontend:** Astro 5, React 19, TypeScript 5, Tailwind 4, Shadcn/ui
 - **Backend:** Supabase (PostgreSQL database with built-in authentication)
 - **AI Integration:** Openrouter.ai for OCR processing
+- **Testing:** 
+  - **Unit & Component Tests:** Vitest, React Testing Library, Mock Service Worker (MSW)
+  - **E2E Tests:** Playwright / Cypress
 - **CI/CD & Hosting:** Github Actions & DigitalOcean
 
 ## 4. Getting Started Locally
@@ -36,10 +39,29 @@ To set up the project on your local machine:
    ```
 
 ## 5. Available Scripts
+
+### Development
 - **dev:** Starts the Astro development server.
 - **build:** Builds the project for production.
 - **preview:** Serves a production Build locally for testing.
 - **astro:** CLI command for Astro-specific operations.
+
+### Testing
+- **test:** Runs unit tests in watch mode (Vitest).
+- **test:run:** Runs unit tests once.
+- **test:ui:** Opens Vitest UI for interactive testing.
+- **test:coverage:** Runs tests with coverage report.
+- **test:unit:** Runs only unit tests in `src/`.
+- **test:integration:** Runs only integration tests in `__tests__/`.
+- **e2e:** Runs all E2E tests (Playwright).
+- **e2e:ui:** Opens Playwright UI for interactive E2E testing.
+- **e2e:headed:** Runs E2E tests with visible browser.
+- **e2e:debug:** Runs E2E tests in debug mode.
+- **e2e:report:** Shows Playwright test report.
+- **e2e:codegen:** Generates E2E tests automatically.
+- **test:all:** Runs all tests (unit + E2E).
+
+### Code Quality
 - **lint:** Runs ESLint to analyze code quality.
 - **lint:fix:** Automatically fixes linting issues.
 - **format:** Formats code using Prettier.
