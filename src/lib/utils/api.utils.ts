@@ -40,3 +40,6 @@ export function buildQueryString(params: ProductSearchParams): string {
   return searchParams.toString();
 }
 
+
+
+
