@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach, beforeAll, afterAll } from 'vitest';
-import { server } from './src/__mocks__/msw/server';
+import { server } from '__mocks__/msw/server';
 
 /**
  * Setup file dla Vitest

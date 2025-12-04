@@ -5,12 +5,10 @@ import { http, HttpResponse } from 'msw';
  * Mockują endpointy związane z logowaniem, rejestracją i zarządzaniem sesją
  */
 
-const BASE_URL = 'http://localhost:4321/api';
-
 export const authHandlers = [
   // POST /api/auth/register - Rejestracja użytkownika
-  http.post(`${BASE_URL}/auth/register`, async ({ request }) => {
-    const body = await request.json();
+  http.post('/api/auth/register', async ({ request }) => {
+    const body = (await request.json()) as { email?: string };
     
     // Symulacja sukcesu rejestracji
     return HttpResponse.json(
@@ -23,8 +21,19 @@ export const authHandlers = [
   }),
 
   // POST /api/auth/login - Logowanie użytkownika
-  http.post(`${BASE_URL}/auth/login`, async ({ request }) => {
-    const body = await request.json();
+  http.post('/api/auth/login', async ({ request }) => {
+    const body = (await request.json()) as { email?: string; password?: string };
+    
+    // Symuluj błąd dla konkretnych danych testowych
+    if (body.email === 'wrong@example.com' || body.password === 'wrongpassword') {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Nieprawidłowy email lub hasło',
+        },
+        { status: 401 }
+      );
+    }
     
     // Symulacja sukcesu logowania
     return HttpResponse.json(
@@ -37,7 +46,7 @@ export const authHandlers = [
   }),
 
   // POST /api/auth/logout - Wylogowanie użytkownika
-  http.post(`${BASE_URL}/auth/logout`, () => {
+  http.post('/api/auth/logout', () => {
     return HttpResponse.json(
       {
         success: true,
@@ -48,7 +57,7 @@ export const authHandlers = [
   }),
 
   // POST /api/auth/reset-password - Reset hasła
-  http.post(`${BASE_URL}/auth/reset-password`, async ({ request }) => {
+  http.post('/api/auth/reset-password', async ({ request }) => {
     const body = await request.json();
     
     return HttpResponse.json(

@@ -7,6 +7,17 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
+ * Props dla komponentu LoginForm
+ */
+interface LoginFormProps {
+  /**
+   * Callback wywoływany po pomyślnym zalogowaniu
+   * Opcjonalny - jeśli nie podany, wykonuje redirect do '/'
+   */
+  onSuccess?: () => void;
+}
+
+/**
  * LoginForm - formularz logowania użytkownika
  * 
  * @component
@@ -34,7 +45,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
  * @version 1.0.0 MVP
  * @since 2025-01-21
  */
-export function LoginForm() {
+export function LoginForm({ onSuccess }: LoginFormProps = {}) {
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -94,8 +105,12 @@ export function LoginForm() {
         return;
       }
 
-      // Sukces - redirect przez window.location (pełne przeładowanie dla SSR)
-      window.location.href = '/';
+      // Sukces - wywołaj callback lub redirect
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.href = '/';
+      }
     } catch (err) {
       setError('Wystąpił błąd połączenia. Spróbuj ponownie.');
       console.error('Login error:', err);

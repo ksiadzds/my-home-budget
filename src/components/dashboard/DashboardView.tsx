@@ -5,14 +5,13 @@ import type {
   CategoryDTO,
   OcrResultViewModel,
   ReceiptProcessingResponseDTO,
-  MatchedRow,
-  UnmatchedRow,
 } from '@/types';
 import { UploadDropzone } from './UploadDropzone';
 import { OcrProcessingPanel } from './OcrProcessingPanel';
 import { VerificationList } from './VerificationList';
 import { SummaryPanel } from './SummaryPanel';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { mapApiResponseToViewModel, recalculateSummary } from '@/lib/utils/dashboard.utils';
 
 /**
  * DashboardView - główny komponent orkiestrujący przepływ Dashboard
@@ -168,27 +167,7 @@ export function DashboardView() {
       const data: ReceiptProcessingResponseDTO = await response.json();
       
       // Mapowanie odpowiedzi API do modelu widoku
-      const viewModel: OcrResultViewModel = {
-        matched_rows: data.matched_products.map((p): MatchedRow => ({
-          type: 'matched',
-          id: crypto.randomUUID(),
-          nazwa_produktu: p.nazwa_produktu,
-          kategoria_id: p.kategoria_id,
-          price: p.price,
-        })),
-        unmatched_rows: data.unmatched_products.map((p): UnmatchedRow => ({
-          type: 'unmatched',
-          id: crypto.randomUUID(),
-          nazwa_produktu: p.nazwa_produktu,
-          price: p.price,
-          suggested_categories: p.suggested_categories,
-          selected_category_id: undefined,
-          isSaving: false,
-          created_product_id: undefined,
-          error_message: undefined,
-        })),
-        summary: data.summary,
-      };
+      const viewModel = mapApiResponseToViewModel(data);
 
       setOcrResult(viewModel);
       setStep('result');
@@ -201,68 +180,6 @@ export function DashboardView() {
     }
   }
 
-  /**
-   * Przelicza podsumowanie wydatków na podstawie aktualnych wierszy
-   * 
-   * @function recalculateSummary
-   * @description
-   * Przelicza podsumowanie wydatków na podstawie:
-   * 1. Wszystkich matched products
-   * 2. Unmatched products, które mają przypisaną kategorię (selected_category_id)
-   * 
-   * @param rows - Aktualne wiersze (matched + unmatched)
-   * @returns Nowe podsumowanie
-   */
-  function recalculateSummary(
-    matchedRows: MatchedRow[],
-    unmatchedRows: UnmatchedRow[]
-  ): ReceiptProcessingResponseDTO['summary'] {
-    // Mapa: kategoria_id -> { total, count }
-    const categoryMap = new Map<string, { total: number; count: number }>();
-
-    // Dodaj matched products
-    for (const row of matchedRows) {
-      if (row.kategoria_id) {
-        const current = categoryMap.get(row.kategoria_id) || { total: 0, count: 0 };
-        categoryMap.set(row.kategoria_id, {
-          total: current.total + row.price,
-          count: current.count + 1,
-        });
-      }
-    }
-
-    // Dodaj unmatched products z wybraną kategorią
-    for (const row of unmatchedRows) {
-      if (row.selected_category_id && row.created_product_id) {
-        const current = categoryMap.get(row.selected_category_id) || { total: 0, count: 0 };
-        categoryMap.set(row.selected_category_id, {
-          total: current.total + row.price,
-          count: current.count + 1,
-        });
-      }
-    }
-
-    // Generuj podsumowanie wg kategorii
-    const summaryItems = Array.from(categoryMap.entries()).map(([categoryId, stats]) => {
-      const category = categories.find(c => c.id === categoryId);
-      return {
-        category: category || { id: categoryId, nazwa_kategorii: 'Nieznana' },
-        total_expense: Math.round(stats.total * 100) / 100,
-        items_count: stats.count,
-      };
-    });
-
-    // Sortuj według największych wydatków
-    summaryItems.sort((a, b) => b.total_expense - a.total_expense);
-
-    // Oblicz sumę całkowitą
-    const total = summaryItems.reduce((sum, item) => sum + item.total_expense, 0);
-
-    return {
-      by_category: summaryItems,
-      total: Math.round(total * 100) / 100,
-    };
-  }
 
   /**
    * Obsługa zmiany kategorii dla wiersza unmatched
@@ -357,7 +274,7 @@ export function DashboardView() {
       };
       
       // PRZELICZ PODSUMOWANIE
-      const newSummary = recalculateSummary(ocrResult.matched_rows, successRows);
+      const newSummary = recalculateSummary(ocrResult.matched_rows, successRows, categories);
       
       setOcrResult({
         ...ocrResult,

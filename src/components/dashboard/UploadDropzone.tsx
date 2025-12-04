@@ -4,6 +4,7 @@ import type { UploadValidationError } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { validateFile } from '@/lib/utils/upload.utils';
 
 /**
  * Props dla komponentu UploadDropzone
@@ -21,9 +22,6 @@ interface UploadDropzoneProps {
    */
   disabled?: boolean;
 }
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png'];
 
 /**
  * UploadDropzone - komponent do wyboru i walidacji pliku paragonu
@@ -60,39 +58,6 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png'];
 export function UploadDropzone({ onValidFile, disabled }: UploadDropzoneProps) {
   const [validationError, setValidationError] = useState<UploadValidationError | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  /**
-   * Waliduje wybrany plik względem typu i rozmiaru
-   * 
-   * @function validateFile
-   * @description
-   * Sprawdza czy plik spełnia wymagania:
-   * - Typ: image/jpeg lub image/png
-   * - Rozmiar: ≤ 10 MB
-   * 
-   * @param {File} file - Plik do walidacji
-   * @returns {UploadValidationError | null} Błąd walidacji lub null jeśli plik jest prawidłowy
-   */
-  function validateFile(file: File): UploadValidationError | null {
-    // Sprawdź typ pliku
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return {
-        code: 'invalid_type',
-        message: `Nieprawidłowy format pliku. Dozwolone formaty: JPEG, PNG. Wybrany format: ${file.type || 'nieznany'}`,
-      };
-    }
-
-    // Sprawdź rozmiar pliku
-    if (file.size > MAX_FILE_SIZE) {
-      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-      return {
-        code: 'too_large',
-        message: `Plik jest za duży. Maksymalny rozmiar: 10 MB. Rozmiar wybranego pliku: ${sizeMB} MB`,
-      };
-    }
-
-    return null;
-  }
 
   /**
    * Obsługa zmiany pliku w input[type="file"]

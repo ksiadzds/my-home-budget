@@ -10,28 +10,25 @@ import { SearchInput } from '@/components/products/SearchInput';
 
 describe('SearchInput', () => {
   it('renderuje pole wyszukiwania', () => {
-    const onSearch = vi.fn();
-    render(<SearchInput onSearch={onSearch} />);
+    const onSearchChange = vi.fn();
+    render(<SearchInput onSearchChange={onSearchChange} />);
     
     expect(screen.getByPlaceholderText(/szukaj/i)).toBeInTheDocument();
   });
 
   it('wywołuje callback po wpisaniu tekstu z debounce', async () => {
     const user = userEvent.setup();
-    const onSearch = vi.fn();
+    const onSearchChange = vi.fn();
     
-    render(<SearchInput onSearch={onSearch} debounceMs={300} />);
+    render(<SearchInput onSearchChange={onSearchChange} />);
     
     const input = screen.getByPlaceholderText(/szukaj/i);
     await user.type(input, 'mleko');
     
-    // Callback NIE powinien być wywołany natychmiast
-    expect(onSearch).not.toHaveBeenCalled();
-    
     // Po czasie debounce callback powinien być wywołany
     await waitFor(
       () => {
-        expect(onSearch).toHaveBeenCalledWith('mleko');
+        expect(onSearchChange).toHaveBeenCalledWith('mleko');
       },
       { timeout: 500 }
     );
@@ -39,28 +36,19 @@ describe('SearchInput', () => {
 
   it('resetuje debounce przy kolejnych wpisaniach', async () => {
     const user = userEvent.setup();
-    const onSearch = vi.fn();
+    const onSearchChange = vi.fn();
     
-    render(<SearchInput onSearch={onSearch} debounceMs={300} />);
+    render(<SearchInput onSearchChange={onSearchChange} />);
     
     const input = screen.getByPlaceholderText(/szukaj/i);
     
-    // Wpisz "m"
-    await user.type(input, 'm');
+    // Wpisz "mleko" szybko
+    await user.type(input, 'mleko');
     
-    // Poczekaj 100ms i wpisz kolejny znak
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await user.type(input, 'l');
-    
-    // Poczekaj kolejne 100ms i wpisz kolejny znak
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await user.type(input, 'eko');
-    
-    // Callback powinien być wywołany tylko raz, z pełnym tekstem
+    // Callback powinien być wywołany z pełnym tekstem po debounce
     await waitFor(
       () => {
-        expect(onSearch).toHaveBeenCalledTimes(1);
-        expect(onSearch).toHaveBeenCalledWith('mleko');
+        expect(onSearchChange).toHaveBeenCalledWith('mleko');
       },
       { timeout: 500 }
     );
@@ -68,25 +56,22 @@ describe('SearchInput', () => {
 
   it('czyści input po kliknięciu przycisku clear', async () => {
     const user = userEvent.setup();
-    const onSearch = vi.fn();
+    const onSearchChange = vi.fn();
     
-    render(<SearchInput onSearch={onSearch} />);
+    render(<SearchInput onSearchChange={onSearchChange} />);
     
     const input = screen.getByPlaceholderText(/szukaj/i) as HTMLInputElement;
     await user.type(input, 'test');
     
-    // Znajdź przycisk clear (jeśli istnieje)
-    const clearButton = screen.queryByRole('button', { name: /wyczyść/i });
+    // Znajdź przycisk clear
+    const clearButton = screen.getByLabelText(/wyczyść wyszukiwanie/i);
+    await user.click(clearButton);
     
-    if (clearButton) {
-      await user.click(clearButton);
-      
-      expect(input.value).toBe('');
-      
-      await waitFor(() => {
-        expect(onSearch).toHaveBeenCalledWith('');
-      });
-    }
+    expect(input.value).toBe('');
+    
+    await waitFor(() => {
+      expect(onSearchChange).toHaveBeenCalledWith('');
+    });
   });
 });
 

@@ -13,6 +13,10 @@ export default defineConfig({
   server: { port: 4321 },
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      // MSW jest używany tylko w testach, wykluczamy z pre-bundlingu
+      exclude: ['msw', '@mswjs/interceptors'],
+    },
   },
   adapter: node({
     mode: "standalone",

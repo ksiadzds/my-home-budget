@@ -1,7 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { server } from '__mocks__/msw/server';
+import { http, HttpResponse, delay } from 'msw';
 
 /**
  * Testy jednostkowe dla komponentu LoginForm
@@ -9,6 +11,11 @@ import { LoginForm } from '@/components/auth/LoginForm';
  */
 
 describe('LoginForm', () => {
+  beforeEach(() => {
+    // Reset handlers before each test
+    server.resetHandlers();
+  });
+
   it('renderuje formularz logowania', () => {
     render(<LoginForm />);
     
@@ -69,6 +76,14 @@ describe('LoginForm', () => {
   });
 
   it('wyłącza przycisk submit podczas wysyłania', async () => {
+    // Dodaj opóźnienie do handlera dla tego testu
+    server.use(
+      http.post('/api/auth/login', async () => {
+        await delay(100);
+        return HttpResponse.json({ success: true, message: 'OK' }, { status: 200 });
+      })
+    );
+    
     const user = userEvent.setup();
     render(<LoginForm />);
     
@@ -81,7 +96,10 @@ describe('LoginForm', () => {
     await user.click(submitButton);
     
     // Przycisk powinien być wyłączony podczas wysyłania
-    expect(submitButton).toBeDisabled();
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+      expect(submitButton).toHaveTextContent(/logowanie/i);
+    }, { timeout: 50 });
   });
 });
 
