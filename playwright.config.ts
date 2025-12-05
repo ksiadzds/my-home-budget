@@ -69,6 +69,13 @@ export default defineConfig({
     url: 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      SUPABASE_URL: process.env.SUPABASE_URL || '',
+      SUPABASE_KEY: process.env.SUPABASE_KEY || '',
+      E2E_USERNAME_ID: process.env.E2E_USERNAME_ID || '',
+      E2E_USERNAME: process.env.E2E_USERNAME || '',
+      E2E_PASSWORD: process.env.E2E_PASSWORD || '',
+    },
   },
 });
 
