@@ -172,7 +172,7 @@ export class OpenRouterService {
       }
 
       return parsed;
-    } catch (error) {
+    } catch {
       // Logika fallback - próba ekstrakcji JSON z tekstu
       const extractedJson = this.extractJsonFromText(messageContent);
 
@@ -262,7 +262,7 @@ export class OpenRouterService {
 
       const data = await response.json();
       return data as OpenRouterResponse;
-    } catch (error) {
+    } catch {
       // Obsługa błędów sieciowych
       if (attempt < this.maxRetries) {
         console.warn(`Próba ${attempt} nieudana, ponowienie za ${this.retryDelay}ms...`);

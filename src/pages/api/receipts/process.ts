@@ -70,7 +70,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let formData: FormData;
     try {
       formData = await request.formData();
-    } catch (error) {
+    } catch {
       return new Response(
         JSON.stringify({
           error: "Błąd parsowania danych",
@@ -153,7 +153,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         "Content-Type": "application/json",
       },
     });
-  } catch (error) {
+  } catch {
     // Obsługa nieoczekiwanych błędów serwera
     console.error("[Receipts API] Error:", {
       endpoint: "/api/receipts/process",

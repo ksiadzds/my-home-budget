@@ -57,6 +57,7 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, request, url
   // Ustaw user w locals jeśli jest zalogowany
   if (user) {
     locals.user = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       email: user.email!,
       id: user.id,
     };

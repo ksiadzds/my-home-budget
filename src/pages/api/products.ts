@@ -97,7 +97,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           },
         }
       );
-    } catch (error) {
+    } catch {
       // Obsługa błędów biznesowych (duplikaty, nieistniejąca kategoria)
       const errorMessage = error instanceof Error ? error.message : "Nieznany błąd";
 
@@ -119,7 +119,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       // W przypadku innych błędów, throw dalej
       throw error;
     }
-  } catch (error) {
+  } catch {
     // Obsługa nieoczekiwanych błędów serwera
     console.error("Błąd podczas tworzenia produktu:", error);
 
@@ -220,7 +220,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
           "Content-Type": "application/json",
         },
       });
-    } catch (error) {
+    } catch {
       // Obsługa błędów biznesowych (parsowanie filtra, błędy zapytania)
       const errorMessage = error instanceof Error ? error.message : "Nieznany błąd";
 
@@ -242,7 +242,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       // W przypadku innych błędów, throw dalej
       throw error;
     }
-  } catch (error) {
+  } catch {
     // Obsługa nieoczekiwanych błędów serwera
     console.error("Błąd podczas pobierania produktów:", error);
 

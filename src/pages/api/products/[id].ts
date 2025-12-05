@@ -94,7 +94,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
         },
       }
     );
-  } catch (error) {
+  } catch {
     // Obsługa nieoczekiwanych błędów serwera
     console.error("Błąd podczas pobierania produktu:", error);
 
@@ -181,7 +181,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
         },
       }
     );
-  } catch (error) {
+  } catch {
     // Obsługa błędów biznesowych z service
     if (error instanceof Error) {
       // 404 - Produkt nie znaleziony
@@ -268,7 +268,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     let requestBody;
     try {
       requestBody = await request.json();
-    } catch (error) {
+    } catch {
       return new Response(
         JSON.stringify({
           error: "Nieprawidłowy format JSON w body",
@@ -320,7 +320,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
         },
       }
     );
-  } catch (error) {
+  } catch {
     // Obsługa błędów biznesowych z service
     if (error instanceof Error) {
       // 404 - Produkt nie znaleziony

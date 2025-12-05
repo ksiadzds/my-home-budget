@@ -35,7 +35,7 @@ export const GET: APIRoute = async ({ locals }) => {
         "Content-Type": "application/json",
       },
     });
-  } catch (error) {
+  } catch {
     // Logowanie błędu do konsoli serwera
     console.error("[Categories API] Error:", {
       endpoint: "/api/categories",

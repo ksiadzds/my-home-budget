@@ -222,7 +222,7 @@ export class ProductsService {
     try {
       const parsed = JSON.parse(filterString);
       return parsed as ProductFilter;
-    } catch (error) {
+    } catch {
       throw new Error("Nieprawidłowy format JSON w parametrze filter");
     }
   }

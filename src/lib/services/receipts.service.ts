@@ -196,7 +196,7 @@ Przykłady:
       const buffer = Buffer.from(arrayBuffer);
       const base64 = buffer.toString("base64");
       return base64;
-    } catch (error) {
+    } catch {
       throw new Error("Nie udało się odczytać pliku");
     }
   }
