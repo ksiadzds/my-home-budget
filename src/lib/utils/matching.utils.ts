@@ -97,6 +97,3 @@ export function calculateConfidence(ocrName: string, productName: string): numbe
   return 0.6;
 }
 
-
-
-

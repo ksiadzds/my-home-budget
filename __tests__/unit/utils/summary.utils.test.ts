@@ -398,6 +398,3 @@ describe('summary.utils', () => {
   });
 });
 
-
-
-
