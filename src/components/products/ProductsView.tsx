@@ -5,13 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { SearchInput, ProductsTable, PaginationControls, ConfirmDialog } from "./index";
 import { useCategories, useProductsData } from "./hooks";
-import type {
-  ProductDTO,
-  ProductsViewState,
-  UpdateProductRequest,
-  UpdateProductResponse,
-  DeleteProductResponse,
-} from "@/types";
+import type { ProductsViewState, UpdateProductRequest, UpdateProductResponse } from "@/types";
 
 /**
  * ProductsView - główny komponent widoku zarządzania produktami
@@ -78,7 +72,7 @@ export function ProductsView() {
   // Custom hooki do pobierania danych
   const { categories, isLoading: isLoadingCategories, error: errorCategories } = useCategories();
 
-  const { data: productsData, isLoading: isLoadingProducts, error: errorProducts } = useProductsData(searchParams);
+  const { data: productsData, isLoading: _isLoadingProducts, error: errorProducts } = useProductsData(searchParams);
 
   // Synchronizacja kategorii ze stanem
   useEffect(() => {

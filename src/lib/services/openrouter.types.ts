@@ -27,7 +27,7 @@ export interface JsonSchemaDefinition {
   properties?: Record<string, any>;
   required?: string[];
   additionalProperties?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Typ dla response_format zgodnie z API OpenRouter
@@ -47,7 +47,7 @@ export interface ModelParameters {
   top_p?: number;
   frequency_penalty?: number;
   presence_penalty?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Typ dla konfiguracji serwisu
@@ -102,6 +102,6 @@ export type OpenRouterErrorType =
 export interface OpenRouterError {
   type: OpenRouterErrorType;
   message: string;
-  originalError?: any;
+  originalError?: unknown;
   retryable: boolean;
 }

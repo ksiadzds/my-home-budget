@@ -1,6 +1,6 @@
 // src/pages/api/products/[id].ts
 import type { APIRoute } from "astro";
-import { z } from "zod";
+// import { z } from "zod";
 import { ProductsService } from "../../../lib/services/products.service";
 import { getProductParamsSchema, updateProductSchema } from "../../../lib/validations/product.validation";
 

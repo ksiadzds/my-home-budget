@@ -9,7 +9,6 @@ import type {
   OpenRouterErrorType,
   OpenRouterResponse,
   RequestPayload,
-  ResponseFormat,
 } from "./openrouter.types";
 
 /**
@@ -375,7 +374,7 @@ export class OpenRouterService {
    * @throws OpenRouterError gdy dane nie są zgodne ze schematem
    * @private
    */
-  private validateAgainstSchema(data: any, schema: JsonSchemaDefinition): void {
+  private validateAgainstSchema(data: unknown, schema: JsonSchemaDefinition): void {
     // Podstawowa walidacja typu
     if (schema.type === "object" && typeof data !== "object") {
       throw this.createError("validation_error", `Oczekiwano obiektu, otrzymano ${typeof data}`, null, false);
@@ -398,7 +397,7 @@ export class OpenRouterService {
    * @returns Sparsowany JSON lub null
    * @private
    */
-  private extractJsonFromText(text: string): any | null {
+  private extractJsonFromText(text: string): unknown | null {
     // Próba znalezienia JSON między znacznikami
     const jsonMatch =
       text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
@@ -427,7 +426,7 @@ export class OpenRouterService {
   private createError(
     type: OpenRouterErrorType,
     message: string,
-    originalError: any,
+    originalError: unknown,
     retryable: boolean
   ): OpenRouterError {
     const error: OpenRouterError = {

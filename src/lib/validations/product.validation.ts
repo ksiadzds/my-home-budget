@@ -34,12 +34,12 @@ export const productFilterSchema = z
 /**
  * Dozwolone pola sortowania produktów
  */
-const sortFieldSchema = z.enum(["nazwa_produktu", "created_at", "updated_at"]);
+const _sortFieldSchema = z.enum(["nazwa_produktu", "created_at", "updated_at"]);
 
 /**
  * Kierunek sortowania
  */
-const sortOrderSchema = z.enum(["asc", "desc"]);
+const _sortOrderSchema = z.enum(["asc", "desc"]);
 
 /**
  * Schemat walidacji dla sortowania produktów

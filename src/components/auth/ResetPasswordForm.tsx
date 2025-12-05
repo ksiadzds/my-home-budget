@@ -49,7 +49,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 export function ResetPasswordForm() {
   // Wykrycie trybu na podstawie URL
   const [mode, setMode] = useState<"request" | "confirm">("request");
-  const [code, setCode] = useState<string>("");
+  const [_code, setCode] = useState<string>("");
 
   // Stan formularza - krok 1 (żądanie linku)
   const [requestData, setRequestData] = useState<ResetPasswordRequestData>({
