@@ -9,17 +9,16 @@ import type {
   OpenRouterErrorType,
   OpenRouterResponse,
   RequestPayload,
-  ResponseFormat,
-} from './openrouter.types';
+} from "./openrouter.types";
 
 /**
  * Serwis do komunikacji z API OpenRouter
- * 
+ *
  * @description
  * Moduł integrujący funkcjonalności API OpenRouter w celu uzupełnienia czatów
  * opartych na LLM. Umożliwia wysyłanie zapytań, odbieranie i walidację odpowiedzi
  * zgodnie z ustalonym schematem JSON.
- * 
+ *
  * @example
  * ```typescript
  * const service = new OpenRouterService({
@@ -34,7 +33,7 @@ import type {
  *     }
  *   }
  * });
- * 
+ *
  * const result = await service.sendRequest('Przeanalizuj paragon...');
  * const parsed = service.parseResponse(result);
  * ```
@@ -52,11 +51,11 @@ export class OpenRouterService {
 
   /**
    * Konstruktor serwisu OpenRouter
-   * 
+   *
    * @param config - Konfiguracja serwisu zawierająca ustawienia modelu i parametry
    * @throws Error gdy brak wymaganego klucza API w zmiennych środowiskowych
    * @throws Error gdy konfiguracja jest nieprawidłowa
-   * 
+   *
    * @description
    * Inicjalizuje serwis z konfiguracją API, domyślnymi wartościami dla komunikatów
    * oraz walidacją ustawień response_format i parametrów modelu.
@@ -65,7 +64,7 @@ export class OpenRouterService {
     // Walidacja klucza API
     const apiKey = import.meta.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      throw new Error('OPENROUTER_API_KEY nie została znaleziona w zmiennych środowiskowych');
+      throw new Error("OPENROUTER_API_KEY nie została znaleziona w zmiennych środowiskowych");
     }
 
     // Walidacja konfiguracji
@@ -73,14 +72,14 @@ export class OpenRouterService {
 
     // Inicjalizacja pól prywatnych
     this.apiKey = apiKey;
-    this.apiUrl = import.meta.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+    this.apiUrl = import.meta.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
     this.config = config;
     this.maxRetries = 3;
     this.retryDelay = 1000; // 1 sekunda
 
     // Ustawienie domyślnej konfiguracji
     this.defaultConfig = {
-      model: config.model || 'openai/gpt-4o-mini',
+      model: config.model || "openai/gpt-4o-mini",
       parameters: {
         temperature: 0.7,
         max_tokens: 2000,
@@ -89,19 +88,19 @@ export class OpenRouterService {
         presence_penalty: 0,
         ...config.parameters,
       },
-      systemMessage: config.systemMessage || 'Jesteś pomocnym asystentem AI.',
+      systemMessage: config.systemMessage || "Jesteś pomocnym asystentem AI.",
       response_format: config.response_format,
     };
   }
 
   /**
    * Wysyła zapytanie do API OpenRouter
-   * 
+   *
    * @param userMessage - Komunikat użytkownika do przetworzenia (string lub array dla vision)
    * @param customConfig - Opcjonalna niestandardowa konfiguracja dla tego zapytania
    * @returns Odpowiedź z API OpenRouter
    * @throws OpenRouterError w przypadku błędów komunikacji lub autoryzacji
-   * 
+   *
    * @description
    * Przygotowuje komunikaty systemowe i użytkownika, buduje payload
    * zgodny z API OpenRouter i wysyła zapytanie z obsługą retry.
@@ -113,22 +112,12 @@ export class OpenRouterService {
   ): Promise<OpenRouterResponse> {
     // Walidacja komunikatu użytkownika
     if (!userMessage) {
-      throw this.createError(
-        'validation_error',
-        'Komunikat użytkownika nie może być pusty',
-        null,
-        false
-      );
+      throw this.createError("validation_error", "Komunikat użytkownika nie może być pusty", null, false);
     }
 
     // Jeśli userMessage jest stringiem, sprawdź czy nie jest pusty
-    if (typeof userMessage === 'string' && userMessage.trim().length === 0) {
-      throw this.createError(
-        'validation_error',
-        'Komunikat użytkownika nie może być pusty',
-        null,
-        false
-      );
+    if (typeof userMessage === "string" && userMessage.trim().length === 0) {
+      throw this.createError("validation_error", "Komunikat użytkownika nie może być pusty", null, false);
     }
 
     // Połączenie domyślnej konfiguracji z niestandardową
@@ -150,37 +139,28 @@ export class OpenRouterService {
 
   /**
    * Parsuje i waliduje odpowiedź z API
-   * 
+   *
    * @param response - Odpowiedź z API OpenRouter
    * @returns Sparsowany obiekt JSON zgodny ze schematem
    * @throws OpenRouterError gdy odpowiedź nie jest zgodna ze schematem
-   * 
+   *
    * @description
    * Waliduje strukturę odpowiedzi i parsuje JSON content zgodnie
    * z zdefiniowanym response_format. Implementuje logikę fallback
    * w przypadku niezgodności formatu.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parseResponse<T = any>(response: OpenRouterResponse): T {
     // Walidacja struktury odpowiedzi
     if (!response.choices || response.choices.length === 0) {
-      throw this.createError(
-        'validation_error',
-        'Odpowiedź z API nie zawiera wyników',
-        response,
-        false
-      );
+      throw this.createError("validation_error", "Odpowiedź z API nie zawiera wyników", response, false);
     }
 
     const messageContent = response.choices[0].message.content;
 
     // Walidacja zawartości wiadomości
     if (!messageContent) {
-      throw this.createError(
-        'validation_error',
-        'Odpowiedź z API nie zawiera treści wiadomości',
-        response,
-        false
-      );
+      throw this.createError("validation_error", "Odpowiedź z API nie zawiera treści wiadomości", response, false);
     }
 
     // Próba parsowania JSON
@@ -193,32 +173,27 @@ export class OpenRouterService {
       }
 
       return parsed;
-    } catch (error) {
+    } catch {
       // Logika fallback - próba ekstrakcji JSON z tekstu
       const extractedJson = this.extractJsonFromText(messageContent);
-      
+
       if (extractedJson) {
-        console.warn('Użyto logiki fallback do ekstrakcji JSON z odpowiedzi');
+        console.warn("Użyto logiki fallback do ekstrakcji JSON z odpowiedzi");
         return extractedJson as T;
       }
 
-      throw this.createError(
-        'validation_error',
-        'Nie udało się sparsować odpowiedzi jako JSON',
-        error,
-        false
-      );
+      throw this.createError("validation_error", "Nie udało się sparsować odpowiedzi jako JSON", error, false);
     }
   }
 
   /**
    * Przygotowuje payload dla zapytania do API
-   * 
+   *
    * @param userMessage - Komunikat użytkownika (string lub array dla vision)
    * @param config - Konfiguracja dla zapytania
    * @returns Przygotowany payload
    * @private
-   * 
+   *
    * @description
    * Buduje ładunek requestu zawierający:
    * 1. Komunikat systemowy
@@ -226,24 +201,21 @@ export class OpenRouterService {
    * 3. Parametry response_format
    * 4. Nazwę modelu i jego parametry
    */
-  private _preparePayload(
-    userMessage: MessageContent,
-    config: OpenRouterConfig
-  ): RequestPayload {
+  private _preparePayload(userMessage: MessageContent, config: OpenRouterConfig): RequestPayload {
     // Przygotowanie komunikatów
     const messages: ChatMessage[] = [];
 
     // Dodanie komunikatu systemowego jeśli istnieje
     if (config.systemMessage) {
       messages.push({
-        role: 'system',
+        role: "system",
         content: config.systemMessage,
       });
     }
 
     // Dodanie komunikatu użytkownika
     messages.push({
-      role: 'user',
+      role: "user",
       content: userMessage,
     });
 
@@ -264,25 +236,22 @@ export class OpenRouterService {
 
   /**
    * Wysyła zapytanie z mechanizmem retry
-   * 
+   *
    * @param payload - Payload do wysłania
    * @param attempt - Numer próby (domyślnie 1)
    * @returns Odpowiedź z API
    * @throws OpenRouterError po wyczerpaniu prób
    * @private
    */
-  private async _sendWithRetry(
-    payload: RequestPayload,
-    attempt: number = 1
-  ): Promise<OpenRouterResponse> {
+  private async _sendWithRetry(payload: RequestPayload, attempt = 1): Promise<OpenRouterResponse> {
     try {
       const response = await fetch(this.apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'HTTP-Referer': import.meta.env.SITE_URL || 'http://localhost:4321',
-          'X-Title': 'Home Budget App',
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+          "HTTP-Referer": import.meta.env.SITE_URL || "http://localhost:4321",
+          "X-Title": "Home Budget App",
         },
         body: JSON.stringify(payload),
       });
@@ -294,8 +263,7 @@ export class OpenRouterService {
 
       const data = await response.json();
       return data as OpenRouterResponse;
-
-    } catch (error) {
+    } catch {
       // Obsługa błędów sieciowych
       if (attempt < this.maxRetries) {
         console.warn(`Próba ${attempt} nieudana, ponowienie za ${this.retryDelay}ms...`);
@@ -303,44 +271,30 @@ export class OpenRouterService {
         return this._sendWithRetry(payload, attempt + 1);
       }
 
-      throw this.createError(
-        'network_error',
-        'Nie udało się połączyć z API OpenRouter',
-        error,
-        true
-      );
+      throw this.createError("network_error", "Nie udało się połączyć z API OpenRouter", error, true);
     }
   }
 
   /**
    * Obsługuje błędy HTTP z API
-   * 
+   *
    * @param response - Odpowiedź HTTP
    * @param payload - Oryginalny payload
    * @param attempt - Numer próby
    * @throws OpenRouterError
    * @private
    */
-  private async _handleHttpError(
-    response: Response,
-    payload: RequestPayload,
-    attempt: number
-  ): Promise<never> {
+  private async _handleHttpError(response: Response, payload: RequestPayload, attempt: number): Promise<never> {
     const errorData = await response.json().catch(() => ({}));
 
     // Obsługa błędu autoryzacji (401)
     if (response.status === 401) {
-      throw this.createError(
-        'authorization_error',
-        'Nieprawidłowy klucz API OpenRouter',
-        errorData,
-        false
-      );
+      throw this.createError("authorization_error", "Nieprawidłowy klucz API OpenRouter", errorData, false);
     }
 
     // Obsługa rate limit (429)
     if (response.status === 429 && attempt < this.maxRetries) {
-      const retryAfter = parseInt(response.headers.get('Retry-After') || String(this.retryDelay));
+      const retryAfter = parseInt(response.headers.get("Retry-After") || String(this.retryDelay));
       console.warn(`Rate limit osiągnięty, ponowienie za ${retryAfter}ms...`);
       await this.sleep(retryAfter);
       throw { retry: true }; // Signal do retry
@@ -355,8 +309,8 @@ export class OpenRouterService {
 
     // Inne błędy
     throw this.createError(
-      'server_error',
-      `Błąd API: ${response.status} - ${errorData.error?.message || 'Nieznany błąd'}`,
+      "server_error",
+      `Błąd API: ${response.status} - ${errorData.error?.message || "Nieznany błąd"}`,
       errorData,
       response.status >= 500
     );
@@ -364,34 +318,34 @@ export class OpenRouterService {
 
   /**
    * Waliduje konfigurację serwisu
-   * 
+   *
    * @param config - Konfiguracja do walidacji
    * @throws Error gdy konfiguracja jest nieprawidłowa
    * @private
    */
   private validateConfig(config: OpenRouterConfig): void {
     if (!config.model || config.model.trim().length === 0) {
-      throw new Error('Nazwa modelu jest wymagana w konfiguracji');
+      throw new Error("Nazwa modelu jest wymagana w konfiguracji");
     }
 
     // Walidacja response_format jeśli istnieje
     if (config.response_format) {
       const rf = config.response_format;
-      
-      if (rf.type !== 'json_schema') {
+
+      if (rf.type !== "json_schema") {
         throw new Error('response_format.type musi być "json_schema"');
       }
 
       if (!rf.json_schema.name || rf.json_schema.name.trim().length === 0) {
-        throw new Error('response_format.json_schema.name jest wymagane');
+        throw new Error("response_format.json_schema.name jest wymagane");
       }
 
-      if (typeof rf.json_schema.strict !== 'boolean') {
-        throw new Error('response_format.json_schema.strict musi być boolean');
+      if (typeof rf.json_schema.strict !== "boolean") {
+        throw new Error("response_format.json_schema.strict musi być boolean");
       }
 
-      if (!rf.json_schema.schema || typeof rf.json_schema.schema !== 'object') {
-        throw new Error('response_format.json_schema.schema musi być obiektem');
+      if (!rf.json_schema.schema || typeof rf.json_schema.schema !== "object") {
+        throw new Error("response_format.json_schema.schema musi być obiektem");
       }
     }
 
@@ -400,48 +354,38 @@ export class OpenRouterService {
       const params = config.parameters;
 
       if (params.temperature !== undefined && (params.temperature < 0 || params.temperature > 2)) {
-        throw new Error('temperature musi być w zakresie 0-2');
+        throw new Error("temperature musi być w zakresie 0-2");
       }
 
       if (params.max_tokens !== undefined && params.max_tokens < 1) {
-        throw new Error('max_tokens musi być większe od 0');
+        throw new Error("max_tokens musi być większe od 0");
       }
 
       if (params.top_p !== undefined && (params.top_p < 0 || params.top_p > 1)) {
-        throw new Error('top_p musi być w zakresie 0-1');
+        throw new Error("top_p musi być w zakresie 0-1");
       }
     }
   }
 
   /**
    * Waliduje obiekt względem schematu JSON
-   * 
+   *
    * @param data - Dane do walidacji
    * @param schema - Schemat JSON
    * @throws OpenRouterError gdy dane nie są zgodne ze schematem
    * @private
    */
-  private validateAgainstSchema(data: any, schema: JsonSchemaDefinition): void {
+  private validateAgainstSchema(data: unknown, schema: JsonSchemaDefinition): void {
     // Podstawowa walidacja typu
-    if (schema.type === 'object' && typeof data !== 'object') {
-      throw this.createError(
-        'validation_error',
-        `Oczekiwano obiektu, otrzymano ${typeof data}`,
-        null,
-        false
-      );
+    if (schema.type === "object" && typeof data !== "object") {
+      throw this.createError("validation_error", `Oczekiwano obiektu, otrzymano ${typeof data}`, null, false);
     }
 
     // Walidacja wymaganych pól
     if (schema.required && Array.isArray(schema.required)) {
       for (const field of schema.required) {
         if (!(field in data)) {
-          throw this.createError(
-            'validation_error',
-            `Brak wymaganego pola: ${field}`,
-            null,
-            false
-          );
+          throw this.createError("validation_error", `Brak wymaganego pola: ${field}`, null, false);
         }
       }
     }
@@ -449,16 +393,15 @@ export class OpenRouterService {
 
   /**
    * Próbuje wyekstrahować JSON z tekstu (fallback)
-   * 
+   *
    * @param text - Tekst zawierający potencjalnie JSON
    * @returns Sparsowany JSON lub null
    * @private
    */
-  private extractJsonFromText(text: string): any | null {
+  private extractJsonFromText(text: string): unknown | null {
     // Próba znalezienia JSON między znacznikami
-    const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || 
-                     text.match(/```\n([\s\S]*?)\n```/) ||
-                     text.match(/\{[\s\S]*\}/);
+    const jsonMatch =
+      text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
 
     if (jsonMatch) {
       try {
@@ -473,7 +416,7 @@ export class OpenRouterService {
 
   /**
    * Tworzy znormalizowany obiekt błędu
-   * 
+   *
    * @param type - Typ błędu
    * @param message - Komunikat błędu
    * @param originalError - Oryginalny błąd
@@ -484,7 +427,7 @@ export class OpenRouterService {
   private createError(
     type: OpenRouterErrorType,
     message: string,
-    originalError: any,
+    originalError: unknown,
     retryable: boolean
   ): OpenRouterError {
     const error: OpenRouterError = {
@@ -495,7 +438,7 @@ export class OpenRouterService {
 
     // Logowanie błędu (bez ujawniania wrażliwych danych)
     console.error(`[OpenRouterService] ${type}: ${message}`);
-    
+
     // Dodanie oryginalnego błędu tylko w środowisku deweloperskim
     if (import.meta.env.DEV && originalError) {
       error.originalError = originalError;
@@ -506,12 +449,11 @@ export class OpenRouterService {
 
   /**
    * Funkcja pomocnicza do opóźnienia
-   * 
+   *
    * @param ms - Milisekundy opóźnienia
    * @private
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
-

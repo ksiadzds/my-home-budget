@@ -1,7 +1,7 @@
 // src/components/products/hooks/useProductsData.ts
 
-import { useState, useEffect } from 'react';
-import type { ListProductsResponseDTO, ProductSearchParams } from '@/types';
+import { useState, useEffect } from "react";
+import type { ListProductsResponseDTO, ProductSearchParams } from "@/types";
 
 /**
  * Stan zwracany przez hook useProductsData
@@ -17,7 +17,7 @@ interface UseProductsDataReturn {
 
 /**
  * Buduje query string z parametrów wyszukiwania
- * 
+ *
  * @param {ProductSearchParams} params - Parametry wyszukiwania
  * @returns {string} Query string
  */
@@ -28,11 +28,11 @@ function buildQueryString(params: ProductSearchParams): string {
   });
 
   if (params.filter) {
-    searchParams.append('filter', params.filter);
+    searchParams.append("filter", params.filter);
   }
 
   if (params.sort) {
-    searchParams.append('sort', params.sort);
+    searchParams.append("sort", params.sort);
   }
 
   return searchParams.toString();
@@ -40,15 +40,15 @@ function buildQueryString(params: ProductSearchParams): string {
 
 /**
  * Hook do pobierania listy produktów z API
- * 
+ *
  * @param {ProductSearchParams} params - Parametry wyszukiwania
  * @returns {UseProductsDataReturn} Stan produktów
- * 
+ *
  * @description
  * Pobiera listę produktów z API na podstawie parametrów zapytania.
  * Automatycznie odświeża dane przy zmianie parametrów.
  * Zwraca dane, stan ładowania i błąd.
- * 
+ *
  * @example
  * const { data, isLoading, error } = useProductsData({
  *   page: 1,
@@ -71,13 +71,13 @@ export function useProductsData(params: ProductSearchParams): UseProductsDataRet
         const response = await fetch(`/api/products?${queryString}`);
 
         if (!response.ok) {
-          throw new Error('Błąd pobierania produktów');
+          throw new Error("Błąd pobierania produktów");
         }
 
         const result: ListProductsResponseDTO = await response.json();
         setData(result);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Nieznany błąd');
+        setError(err instanceof Error ? err.message : "Nieznany błąd");
       } finally {
         setIsLoading(false);
       }
@@ -88,4 +88,3 @@ export function useProductsData(params: ProductSearchParams): UseProductsDataRet
 
   return { data, isLoading, error };
 }
-

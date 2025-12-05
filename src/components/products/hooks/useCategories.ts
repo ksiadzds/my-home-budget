@@ -1,7 +1,7 @@
 // src/components/products/hooks/useCategories.ts
 
-import { useState, useEffect } from 'react';
-import type { CategoryDTO, GetCategoriesResponse } from '@/types';
+import { useState, useEffect } from "react";
+import type { CategoryDTO, GetCategoriesResponse } from "@/types";
 
 /**
  * Stan zwracany przez hook useCategories
@@ -17,13 +17,13 @@ interface UseCategoriesReturn {
 
 /**
  * Hook do pobierania listy kategorii z API
- * 
+ *
  * @returns {UseCategoriesReturn} Stan kategorii
- * 
+ *
  * @description
  * Pobiera listę kategorii raz przy montażu komponentu.
  * Zwraca dane, stan ładowania i błąd.
- * 
+ *
  * @example
  * const { categories, isLoading, error } = useCategories();
  */
@@ -36,18 +36,18 @@ export function useCategories(): UseCategoriesReturn {
     const fetchCategories = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        const response = await fetch('/api/categories');
-        
+        const response = await fetch("/api/categories");
+
         if (!response.ok) {
-          throw new Error('Błąd pobierania kategorii');
+          throw new Error("Błąd pobierania kategorii");
         }
-        
+
         const result: GetCategoriesResponse = await response.json();
         setCategories(result.categories);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Nieznany błąd');
+        setError(err instanceof Error ? err.message : "Nieznany błąd");
       } finally {
         setIsLoading(false);
       }
@@ -58,4 +58,3 @@ export function useCategories(): UseCategoriesReturn {
 
   return { categories, isLoading, error };
 }
-

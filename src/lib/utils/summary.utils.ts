@@ -1,20 +1,15 @@
 // src/lib/utils/summary.utils.ts
 
-import type { 
-  MatchedRow, 
-  UnmatchedRow, 
-  CategoryDTO, 
-  ReceiptProcessingResponseDTO 
-} from '@/types';
+import type { MatchedRow, UnmatchedRow, CategoryDTO, ReceiptProcessingResponseDTO } from "@/types";
 
 /**
  * Przelicza podsumowanie wydatków na podstawie wierszy matched i unmatched
- * 
+ *
  * @param {MatchedRow[]} matchedRows - Wiersze produktów automatycznie dopasowanych
  * @param {UnmatchedRow[]} unmatchedRows - Wiersze produktów wymagających ręcznej kategoryzacji
  * @param {CategoryDTO[]} categories - Lista wszystkich dostępnych kategorii
  * @returns {ReceiptProcessingResponseDTO['summary']} Przeliczone podsumowanie
- * 
+ *
  * @description
  * Logika kalkulacji:
  * 1. Dodaje wszystkie matched products (które mają kategoria_id)
@@ -24,7 +19,7 @@ import type {
  * 3. Grupuje wydatki według kategorii
  * 4. Sortuje malejąco według total_expense
  * 5. Zaokrągla kwoty do 2 miejsc po przecinku
- * 
+ *
  * @example
  * ```ts
  * const summary = recalculateSummary(
@@ -40,7 +35,7 @@ export function recalculateSummary(
   matchedRows: MatchedRow[],
   unmatchedRows: UnmatchedRow[],
   categories: CategoryDTO[]
-): ReceiptProcessingResponseDTO['summary'] {
+): ReceiptProcessingResponseDTO["summary"] {
   // Mapa: kategoria_id -> { total, count }
   const categoryMap = new Map<string, { total: number; count: number }>();
 
@@ -68,9 +63,9 @@ export function recalculateSummary(
 
   // Generuj podsumowanie wg kategorii
   const summaryItems = Array.from(categoryMap.entries()).map(([categoryId, stats]) => {
-    const category = categories.find(c => c.id === categoryId);
+    const category = categories.find((c) => c.id === categoryId);
     return {
-      category: category || { id: categoryId, nazwa_kategorii: 'Nieznana' },
+      category: category || { id: categoryId, nazwa_kategorii: "Nieznana" },
       total_expense: Math.round(stats.total * 100) / 100,
       items_count: stats.count,
     };
@@ -87,7 +82,3 @@ export function recalculateSummary(
     total: Math.round(total * 100) / 100,
   };
 }
-
-
-
-

@@ -1,11 +1,8 @@
 // src/pages/api/products/[id].ts
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
-import { ProductsService } from '../../../lib/services/products.service';
-import { 
-  getProductParamsSchema, 
-  updateProductSchema 
-} from '../../../lib/validations/product.validation';
+import type { APIRoute } from "astro";
+// import { z } from "zod";
+import { ProductsService } from "../../../lib/services/products.service";
+import { getProductParamsSchema, updateProductSchema } from "../../../lib/validations/product.validation";
 
 // Wyłączenie prerenderowania dla tego endpointu API
 export const prerender = false;
@@ -30,12 +27,12 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!supabase) {
       return new Response(
         JSON.stringify({
-          error: 'Supabase client not available',
+          error: "Supabase client not available",
         }),
         {
           status: 500,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -47,13 +44,13 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!validationResult.success) {
       return new Response(
         JSON.stringify({
-          error: 'Błąd walidacji parametrów',
+          error: "Błąd walidacji parametrów",
           details: validationResult.error.flatten().fieldErrors,
         }),
         {
           status: 400,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -62,7 +59,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     const { id: productId } = validationResult.data;
 
     // Mock user ID dla fazy deweloperskiej
-    const mockUserId = '00000000-0000-0000-0000-000000000001';
+    const mockUserId = "00000000-0000-0000-0000-000000000001";
 
     // Utworzenie instancji serwisu produktów
     const productsService = new ProductsService(supabase);
@@ -74,12 +71,12 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!product) {
       return new Response(
         JSON.stringify({
-          error: 'Produkt nie został znaleziony',
+          error: "Produkt nie został znaleziony",
         }),
         {
           status: 404,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -93,22 +90,22 @@ export const GET: APIRoute = async ({ params, locals }) => {
       {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
-  } catch (error) {
+  } catch {
     // Obsługa nieoczekiwanych błędów serwera
-    console.error('Błąd podczas pobierania produktu:', error);
+    console.error("Błąd podczas pobierania produktu:", error);
 
     return new Response(
       JSON.stringify({
-        error: 'Wystąpił błąd serwera podczas pobierania produktu',
+        error: "Wystąpił błąd serwera podczas pobierania produktu",
       }),
       {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -135,12 +132,12 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (!supabase) {
       return new Response(
         JSON.stringify({
-          error: 'Supabase client not available',
+          error: "Supabase client not available",
         }),
         {
           status: 500,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -152,13 +149,13 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (!validationResult.success) {
       return new Response(
         JSON.stringify({
-          error: 'Błąd walidacji parametrów',
+          error: "Błąd walidacji parametrów",
           details: validationResult.error.flatten().fieldErrors,
         }),
         {
           status: 400,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -175,43 +172,40 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // Zwrócenie potwierdzenia usunięcia
     return new Response(
       JSON.stringify({
-        message: 'Product deleted successfully',
+        message: "Product deleted successfully",
       }),
       {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
-  } catch (error) {
+  } catch {
     // Obsługa błędów biznesowych z service
     if (error instanceof Error) {
       // 404 - Produkt nie znaleziony
-      if (error.message.includes('nie został znaleziony')) {
-        return new Response(
-          JSON.stringify({ error: error.message }),
-          {
-            status: 404,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      if (error.message.includes("nie został znaleziony")) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       }
     }
 
     // Ogólny błąd serwera
-    console.error('Błąd podczas usuwania produktu:', error);
+    console.error("Błąd podczas usuwania produktu:", error);
 
     return new Response(
       JSON.stringify({
-        error: 'Wystąpił błąd serwera podczas usuwania produktu',
+        error: "Wystąpił błąd serwera podczas usuwania produktu",
       }),
       {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -239,12 +233,12 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     if (!supabase) {
       return new Response(
         JSON.stringify({
-          error: 'Supabase client not available',
+          error: "Supabase client not available",
         }),
         {
           status: 500,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -256,13 +250,13 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     if (!paramsValidationResult.success) {
       return new Response(
         JSON.stringify({
-          error: 'Błąd walidacji parametrów',
+          error: "Błąd walidacji parametrów",
           details: paramsValidationResult.error.flatten().fieldErrors,
         }),
         {
           status: 400,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -274,15 +268,15 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     let requestBody;
     try {
       requestBody = await request.json();
-    } catch (error) {
+    } catch {
       return new Response(
         JSON.stringify({
-          error: 'Nieprawidłowy format JSON w body',
+          error: "Nieprawidłowy format JSON w body",
         }),
         {
           status: 400,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -293,13 +287,13 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     if (!bodyValidationResult.success) {
       return new Response(
         JSON.stringify({
-          error: 'Błąd walidacji danych',
+          error: "Błąd walidacji danych",
           details: bodyValidationResult.error.flatten().fieldErrors,
         }),
         {
           status: 400,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -311,69 +305,56 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     const productsService = new ProductsService(supabase);
 
     // Aktualizacja produktu
-    const updatedProduct = await productsService.updateProduct(
-      productId,
-      nazwa_produktu,
-      kategoria_id
-    );
+    const updatedProduct = await productsService.updateProduct(productId, nazwa_produktu, kategoria_id);
 
     // Zwrócenie zaktualizowanego produktu
     return new Response(
       JSON.stringify({
-        message: 'Product updated successfully',
+        message: "Product updated successfully",
         product: updatedProduct,
       }),
       {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
-  } catch (error) {
+  } catch {
     // Obsługa błędów biznesowych z service
     if (error instanceof Error) {
       // 404 - Produkt nie znaleziony
-      if (error.message.includes('nie został znaleziony')) {
-        return new Response(
-          JSON.stringify({ error: error.message }),
-          {
-            status: 404,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      if (error.message.includes("nie został znaleziony")) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       }
 
       // 400 - Błędy walidacji biznesowej
-      if (
-        error.message.includes('nie istnieje') ||
-        error.message.includes('już istnieje')
-      ) {
-        return new Response(
-          JSON.stringify({ error: error.message }),
-          {
-            status: 400,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      if (error.message.includes("nie istnieje") || error.message.includes("już istnieje")) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       }
     }
 
     // Ogólny błąd serwera
-    console.error('Błąd podczas aktualizacji produktu:', error);
+    console.error("Błąd podczas aktualizacji produktu:", error);
 
     return new Response(
       JSON.stringify({
-        error: 'Wystąpił błąd serwera podczas aktualizacji produktu',
+        error: "Wystąpił błąd serwera podczas aktualizacji produktu",
       }),
       {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );

@@ -1,10 +1,10 @@
 // src/components/products/SearchInput.tsx
 
-import { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useDebouncedValue } from './hooks';
+import { useState, useEffect } from "react";
+import { Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useDebouncedValue } from "./hooks";
 
 /**
  * Propsy komponentu SearchInput
@@ -22,14 +22,14 @@ interface SearchInputProps {
 
 /**
  * Komponent input do wyszukiwania produktów po nazwie
- * 
+ *
  * @component
  * @description
  * Input tekstowy z wyszukiwaniem po nazwie produktu.
  * Implementuje debounce 300ms, aby zminimalizować liczbę żądań do API.
  * Wyświetla ikonę lupy i przycisk "Wyczyść" (X) po wprowadzeniu tekstu.
  * Dostępny dla screen readerów (aria-label).
- * 
+ *
  * @example
  * <SearchInput
  *   onSearchChange={(term) => setFilter(term)}
@@ -37,9 +37,9 @@ interface SearchInputProps {
  * />
  */
 export function SearchInput({
-  defaultValue = '',
+  defaultValue = "",
   onSearchChange,
-  placeholder = 'Wyszukaj produkt po nazwie...',
+  placeholder = "Wyszukaj produkt po nazwie...",
   disabled = false,
 }: SearchInputProps) {
   const [value, setValue] = useState(defaultValue);
@@ -52,7 +52,7 @@ export function SearchInput({
   }, [debouncedValue, onSearchChange]);
 
   const handleClear = () => {
-    setValue('');
+    setValue("");
   };
 
   return (
@@ -88,4 +88,3 @@ export function SearchInput({
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model dla strony logowania
@@ -15,12 +15,12 @@ export class LoginPage {
     this.page = page;
     this.emailInput = page.getByLabel(/e-?mail/i);
     this.passwordInput = page.getByLabel(/hasło/i);
-    this.submitButton = page.getByRole('button', { name: /zaloguj/i });
-    this.errorMessage = page.getByRole('alert');
+    this.submitButton = page.getByRole("button", { name: /zaloguj/i });
+    this.errorMessage = page.getByRole("alert");
   }
 
   async goto() {
-    await this.page.goto('/auth/login');
+    await this.page.goto("/auth/login");
   }
 
   async login(email: string, password: string) {
@@ -30,7 +30,6 @@ export class LoginPage {
   }
 
   async waitForNavigation() {
-    await this.page.waitForURL('/', { timeout: 5000 });
+    await this.page.waitForURL("/", { timeout: 5000 });
   }
 }
-

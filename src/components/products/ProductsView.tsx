@@ -1,50 +1,39 @@
 // src/components/products/ProductsView.tsx
 
-import { useState, useEffect, useCallback } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
-import {
-  SearchInput,
-  ProductsTable,
-  PaginationControls,
-  ConfirmDialog,
-} from './index';
-import { useCategories, useProductsData } from './hooks';
-import type {
-  ProductDTO,
-  ProductsViewState,
-  UpdateProductRequest,
-  UpdateProductResponse,
-  DeleteProductResponse,
-} from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { SearchInput, ProductsTable, PaginationControls, ConfirmDialog } from "./index";
+import { useCategories, useProductsData } from "./hooks";
+import type { ProductsViewState, UpdateProductRequest, UpdateProductResponse } from "@/types";
 
 /**
  * ProductsView - główny komponent widoku zarządzania produktami
- * 
+ *
  * @component
  * @description
  * Główny kontener widoku Products, który zarządza przepływem danych,
  * stanem paginacji, sortowania, filtrowania oraz mutacjami (edycja, usunięcie).
- * 
+ *
  * ## Odpowiedzialności:
  * - Pobieranie kategorii z API przy montażu komponentu
  * - Pobieranie produktów z paginacją, filtrowaniem, sortowaniem
  * - Obsługa inline edycji kategorii produktu (optimistic updates)
  * - Obsługa usuwania produktów z potwierdzeniem
  * - Prezentacja błędów dla wszystkich operacji API
- * 
+ *
  * ## Integracja API:
  * - GET `/api/categories` - pobieranie listy kategorii
  * - GET `/api/products` - pobieranie paginowanej listy produktów
  * - PUT `/api/products/{id}` - aktualizacja produktu
  * - DELETE `/api/products/{id}` - usunięcie produktu
- * 
+ *
  * @example
  * ```tsx
  * // Użycie w Astro (jako React island)
  * <ProductsView client:load />
  * ```
- * 
+ *
  * @version 1.0.0 MVP
  * @since 2025-11-29
  */
@@ -64,7 +53,7 @@ export function ProductsView() {
     queryParams: {
       page: 1,
       limit: 20,
-      sort: { field: 'nazwa_produktu', order: 'asc' },
+      sort: { field: "nazwa_produktu", order: "asc" },
     },
     isLoadingProducts: true,
     isLoadingCategories: true,
@@ -76,22 +65,15 @@ export function ProductsView() {
   const [searchParams, setSearchParams] = useState({
     page: 1,
     limit: 20,
-    sort: 'nazwa_produktu:asc' as string,
+    sort: "nazwa_produktu:asc" as string,
     filter: undefined as string | undefined,
   });
 
   // Custom hooki do pobierania danych
-  const {
-    categories,
-    isLoading: isLoadingCategories,
-    error: errorCategories,
-  } = useCategories();
+  const { categories, isLoading: isLoadingCategories, error: errorCategories } = useCategories();
 
-  const {
-    data: productsData,
-    isLoading: isLoadingProducts,
-    error: errorProducts,
-  } = useProductsData(searchParams);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: productsData, isLoading: _isLoadingProducts, error: errorProducts } = useProductsData(searchParams);
 
   // Synchronizacja kategorii ze stanem
   useEffect(() => {
@@ -124,15 +106,13 @@ export function ProductsView() {
 
   /**
    * Obsługa zmiany wyszukiwania
-   * 
+   *
    * @param {string} searchTerm - Zdebounce'owany termin wyszukiwania
    * @description
    * Aktualizuje parametr filter i resetuje page do 1.
    */
   const handleSearchChange = useCallback((searchTerm: string) => {
-    const filter = searchTerm.trim()
-      ? JSON.stringify({ product_name: searchTerm.trim() })
-      : undefined;
+    const filter = searchTerm.trim() ? JSON.stringify({ product_name: searchTerm.trim() }) : undefined;
 
     setSearchParams((prev) => ({
       ...prev,
@@ -152,7 +132,7 @@ export function ProductsView() {
 
   /**
    * Obsługa zmiany strony
-   * 
+   *
    * @param {number} newPage - Numer nowej strony
    * @description
    * Aktualizuje parametr page w stanie.
@@ -174,7 +154,7 @@ export function ProductsView() {
 
   /**
    * Obsługa zmiany kategorii produktu (inline w tabeli)
-   * 
+   *
    * @async
    * @param {string} productId - UUID produktu
    * @param {string} categoryId - UUID nowej kategorii
@@ -213,14 +193,14 @@ export function ProductsView() {
         };
 
         const response = await fetch(`/api/products/${productId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
-            error: 'Błąd serwera',
+            error: "Błąd serwera",
           }));
           throw new Error(errorData.error || `HTTP ${response.status}`);
         }
@@ -230,9 +210,7 @@ export function ProductsView() {
         // Zaktualizuj produkt prawdziwymi danymi z serwera
         setState((prev) => ({
           ...prev,
-          products: prev.products.map((p) =>
-            p.id === productId ? result.product : p
-          ),
+          products: prev.products.map((p) => (p.id === productId ? result.product : p)),
           isMutating: false,
         }));
       } catch (error) {
@@ -242,7 +220,7 @@ export function ProductsView() {
           products: previousProducts,
           isMutating: false,
           errorProducts: `Nie udało się zaktualizować produktu: ${
-            error instanceof Error ? error.message : 'Nieznany błąd'
+            error instanceof Error ? error.message : "Nieznany błąd"
           }`,
         }));
       }
@@ -252,7 +230,7 @@ export function ProductsView() {
 
   /**
    * Obsługa kliknięcia przycisku Usuń
-   * 
+   *
    * @param {string} productId - UUID produktu do usunięcia
    * @description
    * Otwiera dialog potwierdzenia usunięcia.
@@ -276,7 +254,7 @@ export function ProductsView() {
 
   /**
    * Obsługa potwierdzenia usunięcia produktu
-   * 
+   *
    * @async
    * @description
    * Wysyła DELETE request do API.
@@ -292,27 +270,24 @@ export function ProductsView() {
 
     try {
       const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Produkt nie został znaleziony');
+          throw new Error("Produkt nie został znaleziony");
         }
         const errorData = await response.json().catch(() => ({
-          error: 'Błąd serwera',
+          error: "Błąd serwera",
         }));
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
       // Usuń produkt z listy
-      const updatedProducts = state.products.filter(
-        (p) => p.id !== productId
-      );
+      const updatedProducts = state.products.filter((p) => p.id !== productId);
 
       // Sprawdź czy trzeba przejść do poprzedniej strony
-      const shouldDecrementPage =
-        updatedProducts.length === 0 && state.pagination.page > 1;
+      const shouldDecrementPage = updatedProducts.length === 0 && state.pagination.page > 1;
 
       if (shouldDecrementPage) {
         // Przejdź do poprzedniej strony
@@ -333,9 +308,7 @@ export function ProductsView() {
       setState((prev) => ({
         ...prev,
         isMutating: false,
-        errorProducts: `Nie udało się usunąć produktu: ${
-          error instanceof Error ? error.message : 'Nieznany błąd'
-        }`,
+        errorProducts: `Nie udało się usunąć produktu: ${error instanceof Error ? error.message : "Nieznany błąd"}`,
       }));
     }
   }, [state.confirmDialog, state.products, state.pagination.page]);
@@ -366,7 +339,7 @@ export function ProductsView() {
   const categoriesAvailable = categories.length > 0 && !errorCategories;
 
   // Wartość wyszukiwania (dla EmptyState)
-  const searchTerm = state.queryParams.filter?.product_name || '';
+  const searchTerm = state.queryParams.filter?.product_name || "";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-8">
@@ -374,9 +347,7 @@ export function ProductsView() {
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900 mb-2">Produkty</h1>
-          <p className="text-slate-600">
-            Zarządzaj bazą produktów i ich przypisaniem do kategorii
-          </p>
+          <p className="text-slate-600">Zarządzaj bazą produktów i ich przypisaniem do kategorii</p>
         </header>
 
         {/* Alert błędu kategorii */}
@@ -399,10 +370,7 @@ export function ProductsView() {
             <AlertTitle>Błąd</AlertTitle>
             <AlertDescription>
               {state.errorProducts}
-              <button
-                onClick={handleClearError}
-                className="ml-4 underline hover:no-underline"
-              >
+              <button onClick={handleClearError} className="ml-4 underline hover:no-underline">
                 Zamknij
               </button>
             </AlertDescription>
@@ -444,7 +412,7 @@ export function ProductsView() {
         <ConfirmDialog
           open={state.confirmDialog.open}
           onOpenChange={handleDialogClose}
-          productName={state.confirmDialog.productName || ''}
+          productName={state.confirmDialog.productName || ""}
           onConfirm={handleConfirmDelete}
           isDeleting={state.isMutating}
         />

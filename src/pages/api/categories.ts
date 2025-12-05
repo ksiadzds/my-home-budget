@@ -1,6 +1,6 @@
 // src/pages/api/categories.ts
-import type { APIRoute } from 'astro';
-import { CategoriesService } from '@/lib/services/categories.service';
+import type { APIRoute } from "astro";
+import { CategoriesService } from "@/lib/services/categories.service";
 
 // Wyłączenie prerenderowania dla tego endpointu API
 export const prerender = false;
@@ -8,13 +8,13 @@ export const prerender = false;
 /**
  * GET /api/categories
  * Endpoint do pobierania wszystkich predefiniowanych kategorii produktów
- * 
+ *
  * Parametry: Brak
- * 
+ *
  * Zwraca:
  * - 200 OK - lista kategorii została pobrana pomyślnie
  * - 500 Internal Server Error - błąd serwera podczas pobierania kategorii
- * 
+ *
  * Response body:
  * {
  *   categories: CategoryDTO[]
@@ -29,20 +29,17 @@ export const GET: APIRoute = async ({ locals }) => {
     const categories = await CategoriesService.listCategories(supabase);
 
     // Zwróć odpowiedź z listą kategorii
-    return new Response(
-      JSON.stringify({ categories }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-  } catch (error) {
+    return new Response(JSON.stringify({ categories }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch {
     // Logowanie błędu do konsoli serwera
-    console.error('[Categories API] Error:', {
-      endpoint: '/api/categories',
-      error: error instanceof Error ? error.message : 'Unknown error',
+    console.error("[Categories API] Error:", {
+      endpoint: "/api/categories",
+      error: error instanceof Error ? error.message : "Unknown error",
       stack: error instanceof Error ? error.stack : undefined,
       timestamp: new Date().toISOString(),
     });
@@ -50,16 +47,15 @@ export const GET: APIRoute = async ({ locals }) => {
     // Zwróć odpowiedź z błędem 500
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: 'Wystąpił błąd podczas pobierania kategorii',
+        error: "Internal server error",
+        message: "Wystąpił błąd podczas pobierania kategorii",
       }),
       {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
   }
 };
-

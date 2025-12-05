@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model dla strony rejestracji
@@ -17,12 +17,12 @@ export class RegisterPage {
     this.emailInput = page.getByLabel(/e-?mail/i);
     this.passwordInput = page.getByLabel(/^hasło$/i);
     this.confirmPasswordInput = page.getByLabel(/potwierdź hasło/i);
-    this.submitButton = page.getByRole('button', { name: /zarejestruj/i });
-    this.errorMessage = page.getByRole('alert');
+    this.submitButton = page.getByRole("button", { name: /zarejestruj/i });
+    this.errorMessage = page.getByRole("alert");
   }
 
   async goto() {
-    await this.page.goto('/auth/register');
+    await this.page.goto("/auth/register");
   }
 
   async register(email: string, password: string, confirmPassword: string) {
@@ -33,7 +33,6 @@ export class RegisterPage {
   }
 
   async waitForNavigation() {
-    await this.page.waitForURL('/', { timeout: 5000 });
+    await this.page.waitForURL("/", { timeout: 5000 });
   }
 }
-
