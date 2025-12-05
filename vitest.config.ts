@@ -6,6 +6,9 @@ import { resolve } from "path";
  * Wykorzystuje React Testing Library i MSW do mockowania API
  */
 export default defineConfig({
+  // Wyłącz automatyczne ładowanie .env aby testy mogły działać w CI
+  envDir: false,
+  
   test: {
     // Włącz globalne API testowe (describe, it, expect, vi)
     globals: true,
