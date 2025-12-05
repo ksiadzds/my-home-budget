@@ -1,40 +1,40 @@
 ---
 /**
  * Strona rejestracji
- * 
+ *
  * @page /auth/register
  * @description
  * Strona z formularzem rejestracji nowego użytkownika.
  * Wykorzystuje główny Layout i komponent RegisterForm (React).
- * 
+ *
  * @remarks
  * Zgodnie ze specyfikacją auth-spec.md (US-001):
  * - Jeśli użytkownik już jest zalogowany → redirect do '/'
  * - Po sukcesie rejestracji → auto-login i redirect do '/'
  * - Link do logowania dla użytkowników z kontem
- * 
+ *
  * ## Przepływ (US-001):
  * 1. Użytkownik wypełnia formularz (email, hasło, potwierdzenie)
  * 2. Kliknięcie "Zarejestruj się" → POST /api/auth/register
  * 3. Po sukcesie: auto-login i redirect do '/' (dashboard)
  * 4. Toast: "Konto utworzone pomyślnie"
- * 
+ *
  * ## Kryteria akceptacji:
  * - ✅ Formularz rejestracyjny zawiera pola na adres e-mail i hasło
  * - ✅ Po poprawnym wypełnieniu formularza konto jest aktywowane
  * - ✅ Użytkownik otrzymuje potwierdzenie i zostaje zalogowany
- * 
+ *
  * @version 1.0.0 MVP
  * @since 2025-01-21
  */
 
-import Layout from '@/layouts/Layout.astro';
-import { RegisterForm } from '@/components/auth/RegisterForm';
+import Layout from "@/layouts/Layout.astro";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 
 // Sprawdź czy użytkownik jest już zalogowany
 const { user } = Astro.locals;
 if (user) {
-  return Astro.redirect('/');
+  return Astro.redirect("/");
 }
 ---
 
@@ -46,4 +46,3 @@ if (user) {
     </div>
   </div>
 </Layout>
-

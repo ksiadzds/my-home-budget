@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
-import { afterEach, beforeAll, afterAll } from 'vitest';
-import { server } from '__mocks__/msw/server';
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, afterAll } from "vitest";
+import { server } from "__mocks__/msw/server";
 
 /**
  * Setup file dla Vitest
@@ -10,7 +10,7 @@ import { server } from '__mocks__/msw/server';
 
 // Uruchom MSW server przed wszystkimi testami
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' });
+  server.listen({ onUnhandledRequest: "warn" });
 });
 
 // Zresetuj wszystkie handlery między testami
@@ -26,6 +26,5 @@ afterAll(() => {
 });
 
 // Mockuj zmienne środowiskowe
-process.env.PUBLIC_SUPABASE_URL = 'http://localhost:54321';
-process.env.PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
-
+process.env.PUBLIC_SUPABASE_URL = "http://localhost:54321";
+process.env.PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";

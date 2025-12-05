@@ -1,8 +1,8 @@
 // src/components/products/PaginationControls.tsx
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import type { PaginationMetaDTO } from '@/types';
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { PaginationMetaDTO } from "@/types";
 
 /**
  * Propsy komponentu PaginationControls
@@ -18,15 +18,15 @@ interface PaginationControlsProps {
 
 /**
  * Komponent kontrolek nawigacji paginacji
- * 
+ *
  * @component
  * @description
  * Wyświetla numery stron, przyciski Poprzednia/Następna,
  * informację o aktualnej stronie i całkowitej liczbie stron.
  * Wyłącza przyciski na granicznych stronach.
- * 
+ *
  * Dostępność: focus states, aria-labels, wskaźnik aktualnej strony (aria-current="page").
- * 
+ *
  * @example
  * <PaginationControls
  *   pagination={paginationMeta}
@@ -34,11 +34,7 @@ interface PaginationControlsProps {
  *   disabled={isLoading}
  * />
  */
-export function PaginationControls({
-  pagination,
-  onPageChange,
-  disabled = false,
-}: PaginationControlsProps) {
+export function PaginationControls({ pagination, onPageChange, disabled = false }: PaginationControlsProps) {
   const { page, total_pages, has_prev, has_next } = pagination;
 
   const handlePrevious = () => {
@@ -79,10 +75,7 @@ export function PaginationControls({
   const pageNumbers = getPageNumbers();
 
   return (
-    <nav
-      className="flex items-center justify-between gap-4 px-2 py-4"
-      aria-label="Paginacja produktów"
-    >
+    <nav className="flex items-center justify-between gap-4 px-2 py-4" aria-label="Paginacja produktów">
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
@@ -100,12 +93,12 @@ export function PaginationControls({
           {pageNumbers.map((pageNum) => (
             <Button
               key={pageNum}
-              variant={pageNum === page ? 'default' : 'outline'}
+              variant={pageNum === page ? "default" : "outline"}
               size="sm"
               onClick={() => onPageChange(pageNum)}
               disabled={disabled}
               aria-label={`Przejdź do strony ${pageNum}`}
-              aria-current={pageNum === page ? 'page' : undefined}
+              aria-current={pageNum === page ? "page" : undefined}
               className="min-w-[2.5rem]"
             >
               {pageNum}
@@ -127,10 +120,8 @@ export function PaginationControls({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Strona <span className="font-medium">{page}</span> z{' '}
-        <span className="font-medium">{total_pages}</span>
+        Strona <span className="font-medium">{page}</span> z <span className="font-medium">{total_pages}</span>
       </div>
     </nav>
   );
 }
-

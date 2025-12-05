@@ -1,17 +1,17 @@
 // src/lib/utils/api.utils.ts
 
-import type { ProductSearchParams } from '@/types';
+import type { ProductSearchParams } from "@/types";
 
 /**
  * Buduje query string z parametrów wyszukiwania produktów
- * 
+ *
  * @param {ProductSearchParams} params - Parametry wyszukiwania
  * @returns {string} Query string gotowy do użycia w URL
- * 
+ *
  * @description
  * Tworzy URL query string z parametrów page, limit, filter i sort.
  * Filter jest przekazywany jako JSON string.
- * 
+ *
  * @example
  * ```ts
  * const qs = buildQueryString({
@@ -30,13 +30,12 @@ export function buildQueryString(params: ProductSearchParams): string {
   });
 
   if (params.filter) {
-    searchParams.append('filter', params.filter);
+    searchParams.append("filter", params.filter);
   }
 
   if (params.sort) {
-    searchParams.append('sort', params.sort);
+    searchParams.append("sort", params.sort);
   }
 
   return searchParams.toString();
 }
-

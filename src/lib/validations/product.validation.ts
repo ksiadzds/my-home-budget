@@ -1,5 +1,5 @@
 // src/lib/validations/product.validation.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Schemat walidacji dla tworzenia produktu
@@ -10,13 +10,9 @@ export const createProductSchema = z.object({
   nazwa_produktu: z
     .string()
     .trim()
-    .min(1, 'Nazwa produktu nie może być pusta')
-    .max(255, 'Nazwa produktu nie może przekraczać 255 znaków'),
-  kategoria_id: z
-    .string()
-    .uuid('Nieprawidłowy format UUID dla kategoria_id')
-    .nullable()
-    .optional(),
+    .min(1, "Nazwa produktu nie może być pusta")
+    .max(255, "Nazwa produktu nie może przekraczać 255 znaków"),
+  kategoria_id: z.string().uuid("Nieprawidłowy format UUID dla kategoria_id").nullable().optional(),
 });
 
 /**
@@ -28,29 +24,33 @@ export type CreateProductInput = z.infer<typeof createProductSchema>;
  * Schemat walidacji dla filtra produktów
  * Może zawierać category_id (UUID) lub product_name (częściowa nazwa)
  */
-export const productFilterSchema = z.object({
-  category_id: z.string().uuid('Nieprawidłowy format UUID dla category_id').optional(),
-  product_name: z.string().min(1, 'Nazwa produktu nie może być pusta').optional(),
-}).strict();
+export const productFilterSchema = z
+  .object({
+    category_id: z.string().uuid("Nieprawidłowy format UUID dla category_id").optional(),
+    product_name: z.string().min(1, "Nazwa produktu nie może być pusta").optional(),
+  })
+  .strict();
 
 /**
  * Dozwolone pola sortowania produktów
  */
-const sortFieldSchema = z.enum(['nazwa_produktu', 'created_at', 'updated_at']);
+const sortFieldSchema = z.enum(["nazwa_produktu", "created_at", "updated_at"]);
 
 /**
  * Kierunek sortowania
  */
-const sortOrderSchema = z.enum(['asc', 'desc']);
+const sortOrderSchema = z.enum(["asc", "desc"]);
 
 /**
  * Schemat walidacji dla sortowania produktów
  * Format: "pole:kierunek", np. "nazwa_produktu:asc"
  */
-export const productSortSchema = z.string().regex(
-  /^(nazwa_produktu|created_at|updated_at):(asc|desc)$/,
-  'Nieprawidłowy format sortowania. Oczekiwany format: pole:kierunek (np. nazwa_produktu:asc)'
-);
+export const productSortSchema = z
+  .string()
+  .regex(
+    /^(nazwa_produktu|created_at|updated_at):(asc|desc)$/,
+    "Nieprawidłowy format sortowania. Oczekiwany format: pole:kierunek (np. nazwa_produktu:asc)"
+  );
 
 /**
  * Schemat walidacji dla parametrów query listowania produktów
@@ -61,12 +61,12 @@ export const listProductsQuerySchema = z.object({
     .string()
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 1))
-    .refine((val) => val >= 1, 'Numer strony musi być większy lub równy 1'),
+    .refine((val) => val >= 1, "Numer strony musi być większy lub równy 1"),
   limit: z
     .string()
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 20))
-    .refine((val) => val >= 1 && val <= 100, 'Limit musi być między 1 a 100'),
+    .refine((val) => val >= 1 && val <= 100, "Limit musi być między 1 a 100"),
   filter: z
     .string()
     .optional()
@@ -75,17 +75,17 @@ export const listProductsQuerySchema = z.object({
       try {
         return JSON.parse(val);
       } catch {
-        throw new Error('Nieprawidłowy format JSON w parametrze filter');
+        throw new Error("Nieprawidłowy format JSON w parametrze filter");
       }
     })
     .pipe(productFilterSchema.optional()),
-  sort: z.string().optional().refine(
-    (val) => {
+  sort: z
+    .string()
+    .optional()
+    .refine((val) => {
       if (!val) return true;
       return /^(nazwa_produktu|created_at|updated_at):(asc|desc)$/.test(val);
-    },
-    'Nieprawidłowy format sortowania. Oczekiwany format: pole:kierunek (np. nazwa_produktu:asc)'
-  ),
+    }, "Nieprawidłowy format sortowania. Oczekiwany format: pole:kierunek (np. nazwa_produktu:asc)"),
 });
 
 /**
@@ -98,9 +98,7 @@ export type ListProductsQueryInput = z.infer<typeof listProductsQuerySchema>;
  * Sprawdza poprawność formatu UUID
  */
 export const getProductParamsSchema = z.object({
-  id: z
-    .string()
-    .uuid('Nieprawidłowy format UUID dla parametru id'),
+  id: z.string().uuid("Nieprawidłowy format UUID dla parametru id"),
 });
 
 /**

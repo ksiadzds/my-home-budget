@@ -1,11 +1,11 @@
 // src/components/products/ProductsTable.tsx
 
-import { Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CategorySelect } from '@/components/dashboard/CategorySelect';
-import { EmptyState } from './EmptyState';
-import { TableSkeleton } from './TableSkeleton';
-import type { ProductDTO, CategoryDTO } from '@/types';
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CategorySelect } from "@/components/dashboard/CategorySelect";
+import { EmptyState } from "./EmptyState";
+import { TableSkeleton } from "./TableSkeleton";
+import type { ProductDTO, CategoryDTO } from "@/types";
 
 /**
  * Propsy komponentu ProductsTable
@@ -34,27 +34,27 @@ interface ProductsTableProps {
  */
 function formatDate(isoDate: string): string {
   const date = new Date(isoDate);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
   return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 
 /**
  * Komponent tabeli produktów
- * 
+ *
  * @component
  * @description
  * Tabela produktów ze stylami Tailwind CSS.
  * Renderuje kolumny: Nazwa produktu, Kategoria (inline CategorySelect),
  * Data utworzenia, Data aktualizacji, Akcje (przycisk Usuń).
- * 
+ *
  * Wyświetla Skeleton podczas ładowania.
  * Obsługuje puste stany wewnętrznie (EmptyState).
- * 
+ *
  * @example
  * <ProductsTable
  *   products={products}
@@ -100,7 +100,7 @@ export function ProductsTable({
   if (products.length === 0) {
     return (
       <EmptyState
-        type={searchTerm ? 'no_results' : 'no_products'}
+        type={searchTerm ? "no_results" : "no_products"}
         onClearFilter={searchTerm ? () => window.location.reload() : undefined}
       />
     );
@@ -112,21 +112,11 @@ export function ProductsTable({
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
-                Nazwa produktu
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
-                Kategoria
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
-                Utworzono
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
-                Zaktualizowano
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 w-[100px]">
-                Akcje
-              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Nazwa produktu</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Kategoria</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Utworzono</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Zaktualizowano</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 w-[100px]">Akcje</th>
             </tr>
           </thead>
           <tbody>
@@ -153,14 +143,10 @@ export function ProductsTable({
                 </td>
 
                 {/* Data utworzenia */}
-                <td className="px-4 py-3 text-sm text-slate-600">
-                  {formatDate(product.created_at)}
-                </td>
+                <td className="px-4 py-3 text-sm text-slate-600">{formatDate(product.created_at)}</td>
 
                 {/* Data aktualizacji */}
-                <td className="px-4 py-3 text-sm text-slate-600">
-                  {formatDate(product.updated_at)}
-                </td>
+                <td className="px-4 py-3 text-sm text-slate-600">{formatDate(product.updated_at)}</td>
 
                 {/* Akcje - przycisk Usuń */}
                 <td className="px-4 py-3 text-sm">
@@ -181,4 +167,3 @@ export function ProductsTable({
     </div>
   );
 }
-

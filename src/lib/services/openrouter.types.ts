@@ -5,19 +5,19 @@
  */
 
 // Typ dla zawartości komunikatu - może być string lub array (dla vision)
-export type MessageContent = 
-  | string 
-  | Array<{
-      type: 'text' | 'image_url';
+export type MessageContent =
+  | string
+  | {
+      type: "text" | "image_url";
       text?: string;
       image_url?: {
         url: string;
       };
-    }>;
+    }[];
 
 // Typ dla komunikatu w konwersacji
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: MessageContent;
 }
 
@@ -32,7 +32,7 @@ export interface JsonSchemaDefinition {
 
 // Typ dla response_format zgodnie z API OpenRouter
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
     name: string;
     strict: boolean;
@@ -75,14 +75,14 @@ export interface OpenRouterResponse {
   id: string;
   model: string;
   created: number;
-  choices: Array<{
+  choices: {
     index: number;
     message: {
       role: string;
       content: string;
     };
     finish_reason: string;
-  }>;
+  }[];
   usage?: {
     prompt_tokens: number;
     completion_tokens: number;
@@ -91,13 +91,13 @@ export interface OpenRouterResponse {
 }
 
 // Typy błędów OpenRouter
-export type OpenRouterErrorType = 
-  | 'authorization_error'
-  | 'network_error'
-  | 'validation_error'
-  | 'rate_limit_error'
-  | 'server_error'
-  | 'unknown_error';
+export type OpenRouterErrorType =
+  | "authorization_error"
+  | "network_error"
+  | "validation_error"
+  | "rate_limit_error"
+  | "server_error"
+  | "unknown_error";
 
 export interface OpenRouterError {
   type: OpenRouterErrorType;
@@ -105,4 +105,3 @@ export interface OpenRouterError {
   originalError?: any;
   retryable: boolean;
 }
-

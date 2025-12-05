@@ -56,11 +56,34 @@ const reactConfig = tseslint.config({
   },
 });
 
+// Relaxed rules for tests and mocks
+const testConfig = tseslint.config({
+  files: [
+    "**/__tests__/**/*",
+    "**/__mocks__/**/*",
+    "**/e2e/**/*",
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.{ts,tsx}",
+    "vitest.*.ts",
+  ],
+  rules: {
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-useless-constructor": "off",
+    "@typescript-eslint/no-empty-object-type": "off",
+    "react-hooks/rules-of-hooks": "off",
+    "no-constant-binary-expression": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
   jsxA11yConfig,
   reactConfig,
+  testConfig,
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginPrettier
 );

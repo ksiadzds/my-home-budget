@@ -1,10 +1,10 @@
 // src/components/auth/LoginForm.tsx
-import { useState, type FormEvent } from 'react';
-import { loginSchema, getErrorMessage, type LoginFormData } from '@/lib/validations/auth.validation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, type FormEvent } from "react";
+import { loginSchema, getErrorMessage, type LoginFormData } from "@/lib/validations/auth.validation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 /**
  * Props dla komponentu LoginForm
@@ -19,38 +19,38 @@ interface LoginFormProps {
 
 /**
  * LoginForm - formularz logowania użytkownika
- * 
+ *
  * @component
  * @description
  * Komponent formularza logowania z walidacją client-side (Zod),
  * obsługą błędów i stanami loading/error/success.
- * 
+ *
  * @remarks
  * Po sukcesie logowania wykonuje full page reload (window.location.href)
  * aby odświeżyć sesję SSR w middleware.
- * 
+ *
  * ## Funkcjonalności:
  * - Walidacja email i hasła (Zod)
  * - Wywołanie POST /api/auth/login
  * - Przyjazne komunikaty błędów po polsku
  * - Stan loading z disabled inputs
  * - Linki do rejestracji i resetu hasła
- * 
+ *
  * @example
  * ```tsx
  * // Użycie w Astro
  * <LoginForm client:load />
  * ```
- * 
+ *
  * @version 1.0.0 MVP
  * @since 2025-01-21
  */
 export function LoginForm({ onSuccess }: LoginFormProps = {}) {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
@@ -63,7 +63,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
     setError(null);
 
     const result = loginSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const errors: Partial<Record<keyof LoginFormData, string>> = {};
       result.error.errors.forEach((err) => {
@@ -73,7 +73,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
       setFieldErrors(errors);
       return false;
     }
-    
+
     return true;
   }
 
@@ -82,7 +82,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
    */
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -91,16 +91,16 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        const message = getErrorMessage(data.error || 'Wystąpił błąd');
+        const message = getErrorMessage(data.error || "Wystąpił błąd");
         setError(message);
         return;
       }
@@ -109,11 +109,11 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
       if (onSuccess) {
         onSuccess();
       } else {
-        window.location.href = '/';
+        window.location.href = "/";
       }
     } catch (err) {
-      setError('Wystąpił błąd połączenia. Spróbuj ponownie.');
-      console.error('Login error:', err);
+      setError("Wystąpił błąd połączenia. Spróbuj ponownie.");
+      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
@@ -122,14 +122,10 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
   return (
     <Card className="w-full max-w-md shadow-xl border-slate-200">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-slate-900">
-          Zaloguj się
-        </CardTitle>
-        <CardDescription className="text-slate-600">
-          Wprowadź swoje dane, aby uzyskać dostęp do konta
-        </CardDescription>
+        <CardTitle className="text-2xl font-bold text-slate-900">Zaloguj się</CardTitle>
+        <CardDescription className="text-slate-600">Wprowadź swoje dane, aby uzyskać dostęp do konta</CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {/* Globalny błąd */}
@@ -141,10 +137,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
           {/* Email */}
           <div className="space-y-2">
-            <label 
-              htmlFor="email" 
-              className="text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="email" className="text-sm font-medium text-slate-700">
               Adres email
             </label>
             <Input
@@ -154,9 +147,9 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               disabled={loading}
-              className={fieldErrors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}
+              className={fieldErrors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
               aria-invalid={!!fieldErrors.email}
-              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+              aria-describedby={fieldErrors.email ? "email-error" : undefined}
               autoComplete="email"
             />
             {fieldErrors.email && (
@@ -168,10 +161,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
           {/* Hasło */}
           <div className="space-y-2">
-            <label 
-              htmlFor="password" 
-              className="text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="password" className="text-sm font-medium text-slate-700">
               Hasło
             </label>
             <Input
@@ -181,9 +171,9 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               disabled={loading}
-              className={fieldErrors.password ? 'border-red-500 focus-visible:ring-red-500' : ''}
+              className={fieldErrors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
               aria-invalid={!!fieldErrors.password}
-              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+              aria-describedby={fieldErrors.password ? "password-error" : undefined}
               autoComplete="current-password"
             />
             {fieldErrors.password && (
@@ -195,10 +185,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
           {/* Link do resetu hasła */}
           <div className="text-right">
-            <a 
-              href="/auth/reset-password" 
-              className="text-sm text-slate-600 hover:text-slate-900 underline"
-            >
+            <a href="/auth/reset-password" className="text-sm text-slate-600 hover:text-slate-900 underline">
               Zapomniałeś hasła?
             </a>
           </div>
@@ -206,21 +193,14 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
         <CardFooter className="flex flex-col space-y-4">
           {/* Przycisk submit */}
-          <Button 
-            type="submit" 
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white"
-            disabled={loading}
-          >
-            {loading ? 'Logowanie...' : 'Zaloguj się'}
+          <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white" disabled={loading}>
+            {loading ? "Logowanie..." : "Zaloguj się"}
           </Button>
 
           {/* Link do rejestracji */}
           <p className="text-sm text-slate-600 text-center">
-            Nie masz konta?{' '}
-            <a 
-              href="/auth/register" 
-              className="text-slate-900 font-medium hover:underline"
-            >
+            Nie masz konta?{" "}
+            <a href="/auth/register" className="text-slate-900 font-medium hover:underline">
               Zarejestruj się
             </a>
           </p>
@@ -229,4 +209,3 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
     </Card>
   );
 }
-

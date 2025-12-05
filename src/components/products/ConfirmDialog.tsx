@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 /**
  * Propsy komponentu ConfirmDialog
@@ -29,15 +29,15 @@ interface ConfirmDialogProps {
 
 /**
  * Komponent dialogu potwierdzenia usunięcia produktu
- * 
+ *
  * @component
  * @description
  * Dialog potwierdzenia usunięcia produktu.
  * Wyświetla nazwę produktu w treści dialogu dla kontekstu.
  * Zawiera przyciski Anuluj (ghost) i Usuń (destructive).
- * 
+ *
  * Dostępność: focus trap, ESC zamyka dialog, focus na przycisk Anuluj po otwarciu.
- * 
+ *
  * @example
  * <ConfirmDialog
  *   open={isOpen}
@@ -47,13 +47,7 @@ interface ConfirmDialogProps {
  *   isDeleting={isDeleting}
  * />
  */
-export function ConfirmDialog({
-  open,
-  onOpenChange,
-  productName,
-  onConfirm,
-  isDeleting = false,
-}: ConfirmDialogProps) {
+export function ConfirmDialog({ open, onOpenChange, productName, onConfirm, isDeleting = false }: ConfirmDialogProps) {
   const handleConfirm = () => {
     onConfirm();
   };
@@ -77,33 +71,21 @@ export function ConfirmDialog({
         </DialogHeader>
 
         <DialogDescription className="pt-2">
-          Czy na pewno chcesz usunąć produkt{' '}
-          <span className="font-semibold text-foreground">"{productName}"</span>?
+          Czy na pewno chcesz usunąć produkt <span className="font-semibold text-foreground">"{productName}"</span>?
           <br />
           <br />
           Ta akcja jest nieodwracalna.
         </DialogDescription>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleCancel}
-            disabled={isDeleting}
-          >
+          <Button type="button" variant="ghost" onClick={handleCancel} disabled={isDeleting}>
             Anuluj
           </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Usuwanie...' : 'Usuń'}
+          <Button type="button" variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
+            {isDeleting ? "Usuwanie..." : "Usuń"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-

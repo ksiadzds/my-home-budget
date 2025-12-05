@@ -1,7 +1,7 @@
 // src/lib/services/receipts.service.ts
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../db/database.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
 import type {
   ReceiptProcessingResponseDTO,
   MatchedProductDTO,
@@ -9,10 +9,10 @@ import type {
   CategoryDTO,
   SummaryItemDTO,
   ProductDTO,
-} from '../../types';
-import { OpenRouterService } from './openrouter.service';
-import { ProductsService } from './products.service';
-import { CategoriesService } from './categories.service';
+} from "../../types";
+import { OpenRouterService } from "./openrouter.service";
+import { ProductsService } from "./products.service";
+import { CategoriesService } from "./categories.service";
 
 /**
  * Typ dla wyniku OCR z OpenRouter
@@ -39,7 +39,7 @@ export class ReceiptsService {
 
     // Konfiguracja OpenRouter dla OCR paragonów
     this.openRouterService = new OpenRouterService({
-      model: 'openai/gpt-4o-mini',
+      model: "openai/gpt-4o-mini",
       systemMessage: `Jesteś specjalistą od analizy paragonów zakupowych. 
 Twoim zadaniem jest ekstrakcja nazw produktów i ich cen z przesłanego obrazu paragonu.
 
@@ -67,33 +67,33 @@ Przykłady:
 - "NapAlkGoldLoch0,33l 2x6,99=13,98 PLN\nRABAT -4.00" -> nazwa: "NapAlkGoldLoch0,33l", cena: 9.98
 - "Sok pomarańczowy 1L 5.99 PLN\nODPUST -1.00\nDODATKOWY RABAT -0.50" -> nazwa: "Sok pomarańczowy 1L", cena: 4.49`,
       response_format: {
-        type: 'json_schema',
+        type: "json_schema",
         json_schema: {
-          name: 'receipt_extraction',
+          name: "receipt_extraction",
           strict: true,
           schema: {
-            type: 'object',
+            type: "object",
             properties: {
               produkty: {
-                type: 'array',
+                type: "array",
                 items: {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     nazwa_produktu: {
-                      type: 'string',
-                      description: 'Nazwa produktu z paragonu',
+                      type: "string",
+                      description: "Nazwa produktu z paragonu",
                     },
                     cena: {
-                      type: 'number',
-                      description: 'Cena produktu w PLN',
+                      type: "number",
+                      description: "Cena produktu w PLN",
                     },
                   },
-                  required: ['nazwa_produktu', 'cena'],
+                  required: ["nazwa_produktu", "cena"],
                   additionalProperties: false,
                 },
               },
             },
-            required: ['produkty'],
+            required: ["produkty"],
             additionalProperties: false,
           },
         },
@@ -107,28 +107,25 @@ Przykłady:
 
   /**
    * Przetwarza obraz paragonu i zwraca wyniki OCR z prostym SQL matching
-   * 
+   *
    * @param userId - ID użytkownika przetwarzającego paragon
    * @param receiptFile - Plik obrazu paragonu
    * @returns ReceiptProcessingResponseDTO z dopasowanymi i niedopasowanymi produktami
    */
-  async processReceipt(
-    userId: string,
-    receiptFile: File
-  ): Promise<ReceiptProcessingResponseDTO> {
+  async processReceipt(userId: string, receiptFile: File): Promise<ReceiptProcessingResponseDTO> {
     // 1. Konwersja obrazu do base64
     const base64Image = await this.fileToBase64(receiptFile);
 
     // 2. Wysłanie zapytania do OpenRouter z obrazem w formacie Vision API
     const imageUrl = `data:${receiptFile.type};base64,${base64Image}`;
-    
+
     const userMessage = [
       {
-        type: 'text' as const,
-        text: 'Przeanalizuj ten paragon i wyekstrahuj nazwy produktów oraz ich ceny.',
+        type: "text" as const,
+        text: "Przeanalizuj ten paragon i wyekstrahuj nazwy produktów oraz ich ceny.",
       },
       {
-        type: 'image_url' as const,
+        type: "image_url" as const,
         image_url: {
           url: imageUrl,
         },
@@ -141,7 +138,7 @@ Przykłady:
     const ocrResult = this.openRouterService.parseResponse<OCRReceiptResult>(ocrResponse);
 
     // Logowanie wyniku OCR dla debugowania
-    console.log('[ReceiptsService] OCR Result:', {
+    console.log("[ReceiptsService] OCR Result:", {
       productCount: ocrResult.produkty.length,
       timestamp: new Date().toISOString(),
     });
@@ -149,7 +146,7 @@ Przykłady:
     // Jeśli OCR nie zwrócił żadnych produktów
     if (!ocrResult.produkty || ocrResult.produkty.length === 0) {
       return {
-        message: 'Nie znaleziono produktów na paragonie. Sprawdź czy obraz jest wyraźny.',
+        message: "Nie znaleziono produktów na paragonie. Sprawdź czy obraz jest wyraźny.",
         matched_products: [],
         unmatched_products: [],
         summary: {
@@ -172,13 +169,13 @@ Przykłady:
     // 6. Generowanie podsumowania wydatków
     const summary = this.generateSummary(matchedProducts, allCategories);
 
-    console.log('[ReceiptsService] Processing completed:', {
+    console.log("[ReceiptsService] Processing completed:", {
       matched: matchedProducts.length,
       unmatched: unmatchedProducts.length,
     });
 
     return {
-      message: 'Paragon został przetworzony pomyślnie',
+      message: "Paragon został przetworzony pomyślnie",
       matched_products: matchedProducts,
       unmatched_products: unmatchedProducts,
       summary,
@@ -187,7 +184,7 @@ Przykłady:
 
   /**
    * Konwertuje plik do base64 (Node.js / Server-side)
-   * 
+   *
    * @param file - Plik do konwersji
    * @returns Promise z base64 string
    * @private
@@ -197,17 +194,17 @@ Przykłady:
       // W Node.js używamy arrayBuffer() zamiast FileReader
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      const base64 = buffer.toString('base64');
+      const base64 = buffer.toString("base64");
       return base64;
     } catch (error) {
-      throw new Error('Nie udało się odczytać pliku');
+      throw new Error("Nie udało się odczytać pliku");
     }
   }
 
   /**
    * Dopasowuje produkty z OCR do istniejących produktów użytkownika
    * Używa prostego SQL matching (dokładne lub częściowe dopasowanie nazwy)
-   * 
+   *
    * @param userId - ID użytkownika
    * @param ocrItems - Produkty rozpoznane przez OCR
    * @param allCategories - Wszystkie dostępne kategorie
@@ -261,22 +258,17 @@ Przykłady:
   /**
    * Znajduje pasujący produkt w bazie użytkownika
    * Używa prostego porównania nazw (case-insensitive, trimmed)
-   * 
+   *
    * @param ocrItem - Produkt z OCR
    * @param userProducts - Produkty użytkownika z bazy
    * @returns Znaleziony produkt lub null
    * @private
    */
-  private findMatchingProduct(
-    ocrItem: OCRReceiptItem,
-    userProducts: ProductDTO[]
-  ): ProductDTO | null {
+  private findMatchingProduct(ocrItem: OCRReceiptItem, userProducts: ProductDTO[]): ProductDTO | null {
     const normalizedOcrName = ocrItem.nazwa_produktu.toLowerCase().trim();
 
     // Dokładne dopasowanie
-    const exactMatch = userProducts.find(
-      (p) => p.nazwa_produktu.toLowerCase().trim() === normalizedOcrName
-    );
+    const exactMatch = userProducts.find((p) => p.nazwa_produktu.toLowerCase().trim() === normalizedOcrName);
 
     if (exactMatch) {
       return exactMatch;
@@ -285,10 +277,7 @@ Przykłady:
     // Dopasowanie częściowe (OCR name zawiera się w nazwie produktu lub odwrotnie)
     const partialMatch = userProducts.find((p) => {
       const normalizedProductName = p.nazwa_produktu.toLowerCase().trim();
-      return (
-        normalizedProductName.includes(normalizedOcrName) ||
-        normalizedOcrName.includes(normalizedProductName)
-      );
+      return normalizedProductName.includes(normalizedOcrName) || normalizedOcrName.includes(normalizedProductName);
     });
 
     return partialMatch || null;
@@ -296,7 +285,7 @@ Przykłady:
 
   /**
    * Oblicza confidence score dla dopasowania
-   * 
+   *
    * @param ocrName - Nazwa z OCR
    * @param productName - Nazwa z bazy
    * @returns Confidence score (0-1)
@@ -323,7 +312,7 @@ Przykłady:
   /**
    * Generuje podsumowanie wydatków według kategorii
    * Tylko dla matched products (które mają przypisane kategorie)
-   * 
+   *
    * @param matchedProducts - Produkty dopasowane do kategorii
    * @param allCategories - Wszystkie kategorie
    * @returns Obiekt podsumowania
@@ -332,7 +321,7 @@ Przykłady:
   private generateSummary(
     matchedProducts: MatchedProductDTO[],
     allCategories: CategoryDTO[]
-  ): ReceiptProcessingResponseDTO['summary'] {
+  ): ReceiptProcessingResponseDTO["summary"] {
     // Grupowanie produktów według kategorii
     const categoryMap = new Map<string, { total: number; count: number }>();
 

@@ -28,7 +28,7 @@ declare global {
       toHaveStyle(css: string | Record<string, any>): R;
       toHaveTextContent(text: string | RegExp, options?: { normalizeWhitespace: boolean }): R;
       toHaveValue(value: string | string[] | number | null): R;
-      toHaveDisplayValue(value: string | RegExp | Array<string | RegExp>): R;
+      toHaveDisplayValue(value: string | RegExp | (string | RegExp)[]): R;
       toBeChecked(): R;
       toBePartiallyChecked(): R;
       toHaveErrorMessage(message?: string | RegExp): R;
@@ -37,4 +37,3 @@ declare global {
 }
 
 export {};
-

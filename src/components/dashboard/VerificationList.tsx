@@ -1,7 +1,7 @@
 // src/components/dashboard/VerificationList.tsx
-import type { VerificationRow, CategoryDTO } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CategorySelect } from './CategorySelect';
+import type { VerificationRow, CategoryDTO } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { CategorySelect } from "./CategorySelect";
 
 /**
  * Props dla komponentu VerificationList
@@ -12,12 +12,12 @@ interface VerificationListProps {
    * Discriminated union: MatchedRow | UnmatchedRow
    */
   rows: VerificationRow[];
-  
+
   /**
    * Pełna lista kategorii do wyświetlenia w CategorySelect
    */
   categories: CategoryDTO[];
-  
+
   /**
    * Callback wywoływany przy zmianie kategorii dla wiersza unmatched
    * @param rowId - Lokalne UUID wiersza
@@ -28,38 +28,38 @@ interface VerificationListProps {
 
 /**
  * VerificationList - lista wyników OCR do weryfikacji i zapisu
- * 
+ *
  * @component
  * @description
  * Prezentuje wyniki przetwarzania OCR w formie listy wierszy.
  * Rozróżnia produkty dopasowane (matched) od niedopasowanych (unmatched).
- * 
+ *
  * ## Typy wierszy:
- * 
+ *
  * ### Matched (dopasowane automatycznie):
  * - Zielone tło (bg-green-50)
  * - Ikona ✓ (checkmark)
  * - Read-only (brak edycji)
  * - Pokazuje przypisaną kategorię
- * 
+ *
  * ### Unmatched (wymagają ręcznego przypisania):
  * - Pomarańczowe tło (bg-orange-50)
  * - Ikona ⚠️ (warning)
  * - Edytowalny CategorySelect
  * - Auto-zapis przy wyborze kategorii
  * - Status: "Zapisywanie..." → "Zapisano pomyślnie" / błąd
- * 
+ *
  * ## MVP limitations:
  * - Prosta lista zamiast TanStack Table
  * - Brak tooltipów
  * - Brak sortowania/filtrowania
  * - Brak bulk actions
- * 
+ *
  * ## Dostępność (a11y):
  * - Kolory + ikony (nie tylko kolor)
  * - Tekstowe statusy zapisu
  * - Screen reader friendly
- * 
+ *
  * @example
  * ```tsx
  * <VerificationList
@@ -68,10 +68,10 @@ interface VerificationListProps {
  *   onCategoryChange={(rowId, catId) => saveProduct(rowId, catId)}
  * />
  * ```
- * 
+ *
  * @param {VerificationListProps} props
  * @returns {JSX.Element}
- * 
+ *
  * @version 1.0.0 MVP
  * @since 2025-01-21
  */
@@ -81,9 +81,7 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
       <Card>
         <CardHeader>
           <CardTitle>Wyniki rozpoznawania</CardTitle>
-          <CardDescription>
-            Nie znaleziono żadnych produktów na paragonie
-          </CardDescription>
+          <CardDescription>Nie znaleziono żadnych produktów na paragonie</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -93,20 +91,15 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
     <Card>
       <CardHeader>
         <CardTitle>Wyniki rozpoznawania</CardTitle>
-        <CardDescription>
-          Sprawdź rozpoznane produkty i przypisz kategorie do niedopasowanych pozycji
-        </CardDescription>
+        <CardDescription>Sprawdź rozpoznane produkty i przypisz kategorie do niedopasowanych pozycji</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {rows.map((row) => {
-            if (row.type === 'matched') {
+            if (row.type === "matched") {
               // Wiersz dopasowany - read-only, zielone tło
               return (
-                <div
-                  key={row.id}
-                  className="p-4 bg-green-50 border border-green-200 rounded-lg"
-                >
+                <div key={row.id} className="p-4 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -122,23 +115,20 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span className="font-medium text-green-900 truncate">
-                          {row.nazwa_produktu}
-                        </span>
+                        <span className="font-medium text-green-900 truncate">{row.nazwa_produktu}</span>
                       </div>
                       <p className="text-sm text-green-700">
                         Dopasowano automatycznie
                         {row.kategoria_id && (
                           <span className="ml-2">
-                            • Kategoria: {categories.find(c => c.id === row.kategoria_id)?.nazwa_kategorii || 'Nieznana'}
+                            • Kategoria:{" "}
+                            {categories.find((c) => c.id === row.kategoria_id)?.nazwa_kategorii || "Nieznana"}
                           </span>
                         )}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-green-900">
-                        {row.price.toFixed(2)} zł
-                      </p>
+                      <p className="font-semibold text-green-900">{row.price.toFixed(2)} zł</p>
                     </div>
                   </div>
                 </div>
@@ -147,10 +137,7 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
 
             // Wiersz niedopasowany - edytowalny, pomarańczowe tło
             return (
-              <div
-                key={row.id}
-                className="p-4 bg-orange-50 border border-orange-200 rounded-lg"
-              >
+              <div key={row.id} className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -167,18 +154,12 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span className="font-medium text-orange-900 truncate">
-                          {row.nazwa_produktu}
-                        </span>
+                        <span className="font-medium text-orange-900 truncate">{row.nazwa_produktu}</span>
                       </div>
-                      <p className="text-sm text-orange-700">
-                        Wymagane przypisanie kategorii
-                      </p>
+                      <p className="text-sm text-orange-700">Wymagane przypisanie kategorii</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-orange-900">
-                        {row.price.toFixed(2)} zł
-                      </p>
+                      <p className="font-semibold text-orange-900">{row.price.toFixed(2)} zł</p>
                     </div>
                   </div>
 
@@ -194,20 +175,8 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
                     {/* Status zapisu */}
                     {row.isSaving && (
                       <p className="text-sm text-orange-700 flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4 animate-spin"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path
                             className="opacity-75"
                             fill="currentColor"
@@ -220,12 +189,7 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
 
                     {row.created_product_id && !row.isSaving && !row.error_message && (
                       <p className="text-sm text-green-700 flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                           <path
                             fillRule="evenodd"
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -263,4 +227,3 @@ export function VerificationList({ rows, categories, onCategoryChange }: Verific
     </Card>
   );
 }
-

@@ -2,14 +2,14 @@
 
 /**
  * Komponent szkieletu wiersza tabeli podczas ładowania
- * 
+ *
  * @component
  * @description
  * Prosty komponent wyświetlający animowany szkielet dla wierszy tabeli.
  * Używany podczas ładowania danych z API.
- * 
+ *
  * @param {number} rows - Liczba wierszy do wyświetlenia (default: 5)
- * 
+ *
  * @example
  * <TableSkeleton rows={3} />
  */
@@ -38,4 +38,3 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
     </>
   );
 }
-

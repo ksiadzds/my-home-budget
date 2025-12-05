@@ -15,7 +15,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       // MSW jest używany tylko w testach, wykluczamy z pre-bundlingu
-      exclude: ['msw', '@mswjs/interceptors'],
+      exclude: ["msw", "@mswjs/interceptors"],
     },
   },
   adapter: node({
