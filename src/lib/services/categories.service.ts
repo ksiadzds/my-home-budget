@@ -6,6 +6,7 @@ import type { CategoryDTO } from "@/types";
  * Serwis do zarządzania kategoriami produktów
  * Enkapsuluje logikę biznesową związaną z operacjami na kategoriach
  */
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CategoriesService {
   /**
    * Pobiera wszystkie kategorie z bazy danych

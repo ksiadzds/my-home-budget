@@ -149,6 +149,7 @@ export class OpenRouterService {
    * z zdefiniowanym response_format. Implementuje logikę fallback
    * w przypadku niezgodności formatu.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parseResponse<T = any>(response: OpenRouterResponse): T {
     // Walidacja struktury odpowiedzi
     if (!response.choices || response.choices.length === 0) {

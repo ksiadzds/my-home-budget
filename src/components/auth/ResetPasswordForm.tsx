@@ -49,6 +49,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 export function ResetPasswordForm() {
   // Wykrycie trybu na podstawie URL
   const [mode, setMode] = useState<"request" | "confirm">("request");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_code, setCode] = useState<string>("");
 
   // Stan formularza - krok 1 (żądanie linku)

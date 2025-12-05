@@ -72,6 +72,7 @@ export function ProductsView() {
   // Custom hooki do pobierania danych
   const { categories, isLoading: isLoadingCategories, error: errorCategories } = useCategories();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: productsData, isLoading: _isLoadingProducts, error: errorProducts } = useProductsData(searchParams);
 
   // Synchronizacja kategorii ze stanem

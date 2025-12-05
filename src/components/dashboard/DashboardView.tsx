@@ -58,6 +58,7 @@ export function DashboardView() {
 
   // Stan pliku i przetwarzania OCR
   const [file, setFile] = useState<File | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_processing, setProcessing] = useState({ running: false });
   const [ocrResult, setOcrResult] = useState<OcrResultViewModel | null>(null);
   const [ocrError, setOcrError] = useState<string | null>(null);

@@ -24,6 +24,7 @@ export interface ChatMessage {
 // Typ dla schematu JSON zgodnego z wymogami OpenRouter
 export interface JsonSchemaDefinition {
   type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   properties?: Record<string, any>;
   required?: string[];
   additionalProperties?: boolean;

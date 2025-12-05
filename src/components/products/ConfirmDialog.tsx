@@ -71,7 +71,8 @@ export function ConfirmDialog({ open, onOpenChange, productName, onConfirm, isDe
         </DialogHeader>
 
         <DialogDescription className="pt-2">
-          Czy na pewno chcesz usunąć produkt <span className="font-semibold text-foreground">"{productName}"</span>?
+          Czy na pewno chcesz usunąć produkt{" "}
+          <span className="font-semibold text-foreground">&quot;{productName}&quot;</span>?
           <br />
           <br />
           Ta akcja jest nieodwracalna.
