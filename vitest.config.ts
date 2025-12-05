@@ -8,7 +8,7 @@ import { resolve } from "path";
 export default defineConfig({
   // Wyłącz automatyczne ładowanie .env aby testy mogły działać w CI
   envDir: false,
-  
+
   test: {
     // Włącz globalne API testowe (describe, it, expect, vi)
     globals: true,
